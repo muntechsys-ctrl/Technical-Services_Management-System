@@ -1,0 +1,491 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function accountPath() {
+      return /databases/$(database)/documents/accounts/$(request.auth.uid);
+    }
+
+    function myUserId() {
+      return get(accountPath()).data.userId.replace('"', '').trim();
+    }
+
+    function me() {
+      return get(/databases/$(database)/documents/users/$(myUserId())).data;
+    }
+
+    function member() {
+      return signedIn() && exists(accountPath()) && me().active != false;
+    }
+
+    function isAdmin() {
+      return member() && me().role == "admin";
+    }
+
+    function setupPath() {
+      return /databases/$(database)/documents/meta/setup;
+    }
+
+    function bootstrapping() {
+      return signedIn() && !exists(setupPath()) && existsAfter(setupPath());
+    }
+
+    function isMe(value) {
+      return value == myUserId();
+    }
+
+    // مدير النظام في الصفحة الرئيسية يُنشئ موظفي شؤون الموظفين وأقسامهم منها
+    // (الصفحة الرئيسية هي مصدر الموظفين وحسابات الدخول)
+
+    match /meta/setup {
+      allow get: if true;
+      allow create: if bootstrapping() || portalAdmin();
+    }
+
+    match /logins/{key} {
+      allow get: if true;
+      allow create, update, delete: if isAdmin() || bootstrapping();
+    }
+
+    match /accounts/{authUid} {
+      allow get: if signedIn() && (request.auth.uid == authUid || isAdmin() || portalAdmin());
+      allow list: if isAdmin() || portalAdmin();
+      allow create, update, delete: if isAdmin() || bootstrapping() || portalAdmin();
+    }
+
+    match /users/{id} {
+      allow read: if member() || portalAdmin();
+      allow write: if isAdmin() || bootstrapping() || portalAdmin();
+    }
+
+    match /departments/{id} {
+      allow read: if member() || portalAdmin();
+      allow write: if isAdmin() || portalAdmin();
+    }
+
+    match /units/{id} {
+      allow read: if member() || portalAdmin();
+      allow write: if isAdmin() || portalAdmin();
+    }
+
+    match /instructions/{id} {
+      allow read: if member();
+      allow create: if isAdmin() || (member() && isMe(request.resource.data.managerId));
+      allow update, delete: if isAdmin() || (member() && isMe(resource.data.managerId));
+    }
+
+    function leaveParty() {
+      return isMe(resource.data.employeeId) ||
+        isMe(resource.data.managerId) ||
+        isMe(resource.data.coManagerId) ||
+        isMe(resource.data.finalApproverId) ||
+        isMe(resource.data.coverId);
+    }
+
+    match /leaves/{id} {
+      allow read, update: if isAdmin() || (member() && leaveParty());
+      allow create: if isAdmin() || (member() && isMe(request.resource.data.employeeId));
+      allow delete: if isAdmin();
+    }
+
+    function requestParty() {
+      return isMe(resource.data.employeeId) ||
+        isMe(resource.data.managerId) ||
+        isMe(resource.data.currentReviewerId) ||
+        isMe(resource.data.forwardedBy) ||
+        isMe(resource.data.coverId) ||
+        isMe(resource.data.proposedCoverId);
+    }
+
+    match /requests/{id} {
+      allow read, update: if isAdmin() || (member() && requestParty());
+      allow create: if isAdmin() || (member() && isMe(request.resource.data.employeeId));
+      allow delete: if isAdmin();
+    }
+
+    function pairParty() {
+      return isMe(resource.data.employeeId) || isMe(resource.data.managerId);
+    }
+
+    match /inquiries/{id} {
+      allow read, update: if isAdmin() || (member() && pairParty());
+      allow create: if isAdmin() || (member() && isMe(request.resource.data.employeeId));
+      allow delete: if isAdmin();
+    }
+
+    match /assignments/{id} {
+      allow read, update: if isAdmin() || (member() && pairParty());
+      allow create: if isAdmin() || (member() && isMe(request.resource.data.managerId));
+      allow delete: if isAdmin();
+    }
+
+    function validAbsence(id) {
+      let d = request.resource.data;
+      let src = getAfter(/databases/$(database)/documents/$(d.source)/$(id)).data;
+      return d.source in ["leaves", "requests"] &&
+        src.employeeId == d.employeeId &&
+        src.startDate == d.startDate &&
+        src.endDate == d.endDate &&
+        src.status == d.status &&
+        src.get("departmentId", "") == d.departmentId &&
+        src.get("coverId", "") == d.coverId;
+    }
+
+    match /absences/{id} {
+      allow read: if isAdmin() || (member() && (
+        resource.data.departmentId == me().departmentId ||
+        isMe(resource.data.employeeId) ||
+        isMe(resource.data.coverId)));
+      allow create, update: if isAdmin() || (member() && validAbsence(id));
+      allow delete: if isAdmin();
+    }
+
+    match /profiles/{id} {
+      allow read: if member() && isMe(resource.data.userId);
+      allow create: if member() && isMe(id) && isMe(request.resource.data.userId);
+      allow update: if member() && isMe(resource.data.userId) &&
+        isMe(request.resource.data.userId);
+    }
+
+    match /contacts/{id} {
+      allow read: if member();
+      // المديرة تستطيع إدخالها عند استيراد نسخة احتياطية
+      allow create, update: if isAdmin() ||
+        (member() && isMe(id) && isMe(request.resource.data.userId));
+      allow delete: if isAdmin();
+    }
+
+    match /notes/{id} {
+      allow read, update, delete:
+        if member() && isMe(resource.data.userId);
+      allow create:
+        if member() && (isMe(request.resource.data.userId) || isAdmin());
+    }
+
+    // ================= نظام إدارة الخدمات الفنية (الصفحة الرئيسية) =================
+    // حساباتها مستقلة في جداول تبدأ بـ portal_
+
+    function portalAccountPath() {
+      return /databases/$(database)/documents/portal_accounts/$(request.auth.uid);
+    }
+
+    function portalUserId() {
+      return get(portalAccountPath()).data.userId;
+    }
+
+    function portalMe() {
+      return get(/databases/$(database)/documents/portal_users/$(portalUserId())).data;
+    }
+
+    function portalMember() {
+      return signedIn() && exists(portalAccountPath());
+    }
+
+    function portalAdmin() {
+      return portalMember() && portalMe().role == "super_admin";
+    }
+
+    function portalSetupPath() {
+      return /databases/$(database)/documents/portal_meta/setup;
+    }
+
+    function portalBootstrapping() {
+      return signedIn() && !exists(portalSetupPath()) && existsAfter(portalSetupPath());
+    }
+
+    match /portal_meta/setup {
+      allow get: if true;
+      allow create: if portalBootstrapping();
+    }
+
+    // المنصات الافتراضية التي أُضيفت مسبقاً (حتى لا تعود المحذوفة)
+    match /portal_meta/seeded {
+      allow get, write: if portalAdmin();
+    }
+
+    // نسخة الهيكل التنظيمي للموظفين (الاسم والقسم والشعبة والمنصب فقط)
+    match /portal_directory/{docId} {
+      allow get: if portalMember();
+      allow write: if portalAdmin();
+    }
+
+    // ملاحظات كل موظف الخاصة: لا يقرؤها ولا يعدّلها غيره (ولا مدير النظام)
+    match /portal_my_notes/{noteId} {
+      allow read, delete: if portalMember() && resource.data.ownerId == portalUserId();
+      allow update: if portalMember() && resource.data.ownerId == portalUserId()
+        && request.resource.data.ownerId == portalUserId()
+        && request.resource.data.text is string
+        && request.resource.data.text.size() < 20000;
+      allow create: if portalMember() && request.resource.data.ownerId == portalUserId()
+        && request.resource.data.text is string
+        && request.resource.data.text.size() < 20000;
+    }
+
+    match /portal_logins/{key} {
+      allow get: if true;
+      allow create, update, delete: if portalAdmin() || portalBootstrapping();
+    }
+
+    match /portal_accounts/{authUid} {
+      allow get: if signedIn() && (request.auth.uid == authUid || portalAdmin());
+      allow create, update, delete: if portalAdmin() || portalBootstrapping();
+    }
+
+    match /portal_users/{id} {
+      allow get: if portalAdmin() || (portalMember() && portalUserId() == id);
+      allow list: if portalAdmin();
+      allow write: if portalAdmin() || portalBootstrapping();
+    }
+
+    // قائمة المنصات (أسماء وروابط) يقرؤها كل موظف، والصفحة تعرض له
+    // المخصصة له والمسجّل اسمه فيها فقط
+    match /portal_platforms/{id} {
+      allow read: if portalMember();
+      allow write: if portalAdmin() || portalBootstrapping();
+    }
+
+    match /portal_audit/{id} {
+      allow read: if portalAdmin();
+      allow create: if portalMember() && request.resource.data.byId == portalUserId();
+    }
+
+    // ================= تقارير المشاريع وصيانة المرافق =================
+    // الفريق في facility_members: المدير يعيّن رئيس القسم، والرئيس يضيف موظفيه ويحذفهم.
+    // الموظف يرى تقاريره فقط، والرئيس والمدير يرون الكل.
+
+    function facilityAdmin() {
+      return portalMember() && portalMe().role in ["super_admin", "director"];
+    }
+
+    function facilityMemberPath() {
+      return /databases/$(database)/documents/facility_members/$(portalUserId());
+    }
+
+    function facilityMember() {
+      return portalMember() && exists(facilityMemberPath());
+    }
+
+    function facilityHead() {
+      return facilityMember() && get(facilityMemberPath()).data.role == "head";
+    }
+
+    // من يرى كل التقارير ويدير الفريق
+    function portalHead() {
+      return facilityAdmin() || facilityHead();
+    }
+
+    match /facility_members/{userId} {
+      allow read: if portalMember();
+      allow create, update: if facilityAdmin() ||
+        (facilityHead() && request.resource.data.role == "employee"
+          && (!exists(/databases/$(database)/documents/facility_members/$(userId))
+              || resource.data.role == "employee"));
+      allow delete: if facilityAdmin() ||
+        (facilityHead() && resource.data.role == "employee");
+    }
+
+    // رئيس القسم يختار موظفيه من قائمة موظفي الصفحة الرئيسية
+    match /portal_users/{id} {
+      allow list: if facilityHead();
+    }
+
+    function facilityReportValid() {
+      return request.resource.data.type in ["كهرباء", "صبغ", "حدادة", "بناء", "نجارة"]
+        && request.resource.data.notes is string
+        && request.resource.data.notes.size() < 5000;
+    }
+
+    function facilityReportPath(id) {
+      return /databases/$(database)/documents/facility_reports/$(id);
+    }
+
+    match /facility_reports/{id} {
+      allow read: if portalHead() ||
+        (portalMember() && resource.data.byId == portalUserId());
+
+      allow create: if (facilityAdmin() || facilityMember())
+        && request.resource.data.byId == portalUserId()
+        && request.resource.data.department in ["قسم المشاريع وصيانة المرافق"]
+        && request.resource.data.type in ["كهرباء", "صبغ", "حدادة", "بناء", "نجارة"]
+        && request.resource.data.notes is string
+        && request.resource.data.notes.size() < 5000;
+
+      // الرئيس والمدير: يعدّلان التقرير أو يعيدانه للموظف للتعديل
+      // الموظف: يعدّل تقريره فقط إذا أُعيد له، ثم يعيد إرساله
+      allow update: if facilityReportValid() && (
+        (portalHead()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+               "type", "date", "time", "notes", "history",
+               "status", "returnNote", "returnedById", "returnedByName"])
+          && request.resource.data.get("status", "submitted") in ["submitted", "returned", "resubmitted"])
+        ||
+        (portalMember()
+          && resource.data.byId == portalUserId()
+          && resource.data.status == "returned"
+          && request.resource.data.status == "resubmitted"
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+               "type", "date", "time", "notes", "history", "status"]))
+      );
+
+      allow delete: if portalAdmin();
+
+      match /photos/{photoId} {
+        allow read: if portalHead() ||
+          (portalMember() && get(facilityReportPath(id)).data.byId == portalUserId());
+        allow create: if (facilityAdmin() || facilityMember())
+          && getAfter(facilityReportPath(id)).data.byId == portalUserId();
+        allow delete: if portalAdmin();
+      }
+    }
+
+    // ================= نطاقات المفتشين =================
+    // كل مستخدم له حساب دخول مرتبط في zones_accounts (مع صلاحيته)،
+    // والبيانات لا يقرؤها ولا يعدّلها إلا مستخدم داخل بحسابه
+
+    function zonesAccountPath() {
+      return /databases/$(database)/documents/zones_accounts/$(request.auth.uid);
+    }
+
+    function zonesMember() {
+      return signedIn() && exists(zonesAccountPath());
+    }
+
+    function zonesRole() {
+      return get(zonesAccountPath()).data.role;
+    }
+
+    function zonesAdmin() {
+      return zonesMember() && zonesRole() in ["super_admin", "manager", "department_head"];
+    }
+
+    function zonesSuperAdmin() {
+      return zonesMember() && zonesRole() == "super_admin";
+    }
+
+    function zonesSetupPath() {
+      return /databases/$(database)/documents/zones_meta/setup;
+    }
+
+    function zonesBootstrapping() {
+      return signedIn() && !exists(zonesSetupPath()) && existsAfter(zonesSetupPath());
+    }
+
+    match /zones_meta/setup {
+      allow get: if true;
+      allow create: if zonesBootstrapping();
+    }
+
+    // أسماء المستخدمين وصلاحياتهم لشاشة الدخول (بدون كلمات مرور)
+    match /zones_directory/{docId} {
+      allow get: if true;
+      allow write: if zonesAdmin() || zonesBootstrapping();
+    }
+
+    match /zones_accounts/{authUid} {
+      allow get: if signedIn() && (request.auth.uid == authUid || zonesSuperAdmin());
+      allow write: if zonesSuperAdmin() || zonesBootstrapping();
+    }
+
+    match /system/{docId} {
+      allow read, write: if zonesMember();
+    }
+
+    match /drafts/{docId} {
+      allow read, write: if zonesMember();
+    }
+
+    // ================= رضى المتعاملين (جداولها تبدأ بـ ci_) =================
+
+    function ciSystemAdmin() {
+      return signedIn()
+        && request.auth.token.firebase.sign_in_provider == 'password'
+        && request.auth.token.email == 'muntechsys@gmail.com';
+    }
+
+    // الموظف = حساب أضافه مدير النظام إلى قائمة ci_staff
+    function ciStaff() {
+      return ciSystemAdmin()
+        || (signedIn()
+          && request.auth.token.firebase.sign_in_provider == 'password'
+          && exists(/databases/$(database)/documents/ci_staff/$(request.auth.token.email)));
+    }
+
+    function ciCodePath(code) {
+      return /databases/$(database)/documents/ci_accessCodes/$(code);
+    }
+
+    // المتعامل يرسل طلباً واحداً فقط بالرمز الذي مسحه (خلال 30 دقيقة)
+    // ويجب تعليم الرمز كمستخدم في نفس العملية
+    function ciValidAccessCode(inquiryId) {
+      return request.resource.data.accessCode is string
+        && request.resource.data.accessCode.matches('[a-z0-9]{6,32}')
+        && get(ciCodePath(request.resource.data.accessCode)).data.claimedBy == request.auth.uid
+        && get(ciCodePath(request.resource.data.accessCode)).data.claimedAt + duration.value(30, 'm') > request.time
+        && !('submittedAt' in get(ciCodePath(request.resource.data.accessCode)).data)
+        && getAfter(ciCodePath(request.resource.data.accessCode)).data.inquiryId == inquiryId;
+    }
+
+    match /ci_staff/{email} {
+      allow read: if ciStaff();
+      // الصفحة الرئيسية تتأكد هل الموظف مسجّل هنا (مستند واحد فقط، بدون عرض القائمة)
+      allow get: if portalMember();
+      allow write: if ciSystemAdmin();
+    }
+
+    // رموز QR: المتعامل يتحقق من رمزه فقط، ولا يستطيع رؤية قائمة الرموز
+    match /ci_accessCodes/{code} {
+      allow get: if signedIn();
+      allow list: if ciStaff();
+
+      allow create: if ciStaff()
+        && request.resource.data.keys().hasOnly(['expiresAt', 'createdAt'])
+        && request.resource.data.expiresAt is timestamp;
+
+      // 1) حجز الرمز عند المسح (لأول شخص فقط)
+      // 2) تعليمه كمستخدم عند إرسال الطلب
+      allow update: if signedIn() && (
+        (!('claimedBy' in resource.data)
+          && resource.data.expiresAt > request.time
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['claimedBy', 'claimedAt'])
+          && request.resource.data.claimedBy == request.auth.uid
+          && request.resource.data.claimedAt == request.time)
+        ||
+        (resource.data.claimedBy == request.auth.uid
+          && !('submittedAt' in resource.data)
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['submittedAt', 'inquiryId'])
+          && request.resource.data.submittedAt == request.time
+          && existsAfter(/databases/$(database)/documents/ci_inquiries/$(request.resource.data.inquiryId)))
+      );
+
+      allow delete: if ciStaff();
+    }
+
+    match /ci_inquiries/{inquiryId} {
+      allow read: if ciStaff();
+
+      allow create: if signedIn()
+        && (ciStaff() || ciValidAccessCode(inquiryId))
+        && request.resource.data.status in ['لم يتم الرد', 'تم الرد']
+        && request.resource.data.name is string
+        && request.resource.data.inquiry is string
+        && request.resource.data.inquiry.size() < 5000;
+
+      // الرد يُسجَّل باسم صاحب الحساب فقط (لا يمكن كتابة اسم شخص آخر)
+      allow update: if ciStaff()
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['status', 'replyNotes', 'repliedBy', 'repliedAt'])
+        && request.resource.data.status in ['لم يتم الرد', 'تم الرد']
+        && request.resource.data.repliedBy == request.auth.token.email
+        && request.resource.data.repliedAt == request.time;
+
+      allow delete: if ciSystemAdmin();
+    }
+  }
+}
