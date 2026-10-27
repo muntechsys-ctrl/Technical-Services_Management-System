@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+
+
+    <title>
+        نظام تقارير التفتيش التفصيلي
+    </title>
+
+
+
+
+
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     LOGIN PAGE
+===================================================== -->
+
+<div
+    id="loginPage"
+    class="login-page"
+>
+
+
+    <div class="login-card">
+
+
+        <div class="logo" aria-label="شعار بلدية مدينة الذيد"><img src="logo.png" alt="شعار بلدية مدينة الذيد"></div>
+        <div class="brand-name">نظام تقارير التفتيش</div>
+
+
+        <h1>
+            نظام تقارير التفتيش التفصيلي
+        </h1>
+
+
+        <div class="subtitle">
+            الدخول إلى نظام الإبلاغ وإدخال تفاصيل التقرير
+        </div>
+
+
+        <label class="login-label">
+            اسم الموظف
+        </label>
+
+
+        <div class="input-box">
+
+            <span>
+                ♙
+            </span>
+
+            <input
+                id="employeeName"
+                type="text"
+                placeholder="اكتب اسمك الكامل"
+            >
+
+        </div>
+
+
+        <div class="role-title">
+            الخبرة
+        </div>
+
+
+        <div class="roles">
+
+
+            <button
+                class="role"
+                data-role="field"
+            >
+                موظف ميداني
+            </button>
+
+
+            <button
+                class="role active"
+                data-role="reviewer"
+            >
+                مسؤول المراجعة
+            </button>
+
+
+        </div>
+
+        <div id="reviewerPasswordWrap" class="field reviewer-password">
+            <label for="reviewerPassword">كلمة مرور مسؤول المراجعة</label>
+            <input id="reviewerPassword" type="password" placeholder="أدخل كلمة المرور" autocomplete="current-password">
+        </div>
+
+        <button
+            class="login-btn"
+            onclick="login()"
+        >
+            دخول ←
+        </button>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     FIELD EMPLOYEE PAGE
+===================================================== -->
+
+<div
+    id="reportPage"
+    class="hidden"
+>
+
+
+    <header class="header">
+
+
+        <div class="header-brand"><div class="header-logo"><img src="logo.png" alt="شعار بلدية مدينة الذيد"></div><div class="header-title">
+
+            <strong>
+                نظام تقارير التفتيش التفصيلي
+            </strong>
+
+            <small>
+                نموذج إدخال بيانات التقرير
+            </small>
+
+        </div></div>
+
+
+        <button
+            class="logout"
+            onclick="logout()"
+        >
+            خروج ↪
+        </button>
+
+
+    </header>
+
+
+
+    <main class="container">
+
+
+        <button class="previous">
+
+            ▣ &nbsp;
+            زيارة التفتيش المرجعية
+
+            <span>
+                ⌄
+            </span>
+
+        </button>
+
+
+
+        <!-- المتطلبات (أعلى النموذج الورقي) -->
+
+        <section class="panel">
+
+            <div class="panel-title">المتطلبات قبل التفتيش</div>
+
+            <div class="panel-body">
+
+                <div id="checklist" class="request-grid checklist-grid">
+                    <label class="check"><input type="checkbox"> خارطة الأرض (موظفين خدمة العملاء)</label>
+                    <label class="check"><input type="checkbox"> رسوم معاينة موقع 200 درهم (موظفين خدمة العملاء)</label>
+                    <label class="check"><input type="checkbox"> التأكد من وجود تراخيص بناء مسبقة (موظف الأرشيف)</label>
+                    <label class="check"><input type="checkbox"> إرفاق أحدث صورة جوية للموقع (موظفين التفتيش)</label>
+                </div>
+
+                <p class="build-hint">إذا تجاوز مجموع مساحات كتل المباني 250 متر مربع، يُقدَّم الطلب عن طريق مكاتب استشارية مختصة (موظفين المرسم).</p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- بيانات القطعة -->
+
+        <section class="panel">
+
+
+            <div class="panel-title">
+                بيانات القطعة
+            </div>
+
+
+            <div class="panel-body">
+
+
+                <div class="grid-2">
+
+
+                    <div class="field">
+
+                        <label>
+                            التاريخ
+                        </label>
+
+                        <input
+                            id="reportDate"
+                            type="date"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            اسم المالك
+                        </label>
+
+                        <input
+                            type="text"
+                            placeholder="اسم المالك"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+                        <label for="partyType">صفة صاحب المعاملة</label>
+                        <select id="partyType">
+                            <option value="">اختر الصفة</option>
+                            <option>مالك</option>
+                            <option>مقاول</option>
+                            <option>استشاري</option>
+                            <option>غير ذلك</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="partyPhone">رقم الهاتف</label>
+                        <input id="partyPhone" type="tel" placeholder="رقم هاتف المالك / المقاول / الاستشاري">
+                    </div>
+
+                    <div class="field">
+
+                        <label>
+                            رقم القطعة
+                        </label>
+
+                        <input
+                            type="text"
+                            placeholder="رقم القطعة"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            المنطقة
+                        </label>
+
+                        <input
+                            type="text"
+                            placeholder="المنطقة"
+                        >
+
+                    </div>
+
+                    <div class="field location-field">
+                        <label>الموقع الجغرافي (Location)</label>
+                        <input id="reportLocation" type="text" placeholder="اكتب الموقع أو العنوان">
+                        <div class="location-actions">
+                            <button type="button" class="small-action" onclick="useCurrentLocation()">تحديد موقعي الحالي</button>
+                            <a id="mapLink" class="map-link hidden" target="_blank" rel="noopener">فتح الموقع على الخريطة</a>
+                        </div>
+                        <input id="locationCoords" type="hidden">
+                    </div>
+
+
+                </div>
+
+
+                <div
+                    class="field"
+                    style="margin-top:12px"
+                >
+
+                    <label>
+                        نوع القطعة
+                    </label>
+
+
+                    <div class="chips">
+
+                        <button class="chip">
+                            سكني
+                        </button>
+
+                        <button class="chip">
+                            زراعي
+                        </button>
+
+                        <button class="chip">
+                            صناعي
+                        </button>
+
+                        <button class="chip">
+                            تجاري
+                        </button>
+
+                        <button class="chip">
+                            عزبة
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="field"
+                    style="margin-top:12px"
+                >
+
+                    <label>
+                        رقم رخصة البناء (إن وجدت)
+                    </label>
+
+                    <input
+                        type="text"
+                        placeholder="رقم الرخصة"
+                    >
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- نوع الطلب -->
+
+        <section class="panel">
+
+
+            <div class="panel-title">
+                نوع الطلب
+            </div>
+
+
+            <div class="panel-body">
+
+
+                <div class="request-grid">
+
+
+                    <label class="check">
+                        <input type="checkbox">
+                        شهادة إنجاز
+                    </label>
+
+
+                    <label class="check">
+                        <input type="checkbox">
+                        ترخيص بناء قائم مخالف
+                    </label>
+
+
+                    <label class="check">
+                        <input type="checkbox">
+                        مقترح بناء جديد
+                    </label>
+
+
+                    <label class="check">
+                        <input type="checkbox">
+                        صيانة مبنى
+                    </label>
+
+
+                    <label class="check">
+                        <input type="checkbox">
+                        من أجل توصيل كهرباء
+                    </label>
+
+
+                    <label class="check">
+                        <input type="checkbox">
+                        من أجل توصيل مياه
+                    </label>
+
+
+                    <label class="check">
+                        <input type="checkbox">
+                        من أجل إضافة أحمال
+                    </label>
+
+
+                    <label class="check">
+                        <input type="checkbox">
+                        من أجل إنهاء أعمال أو استرداد تأمين
+                    </label>
+
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- البناء المقترح -->
+
+        <section class="panel">
+
+
+            <div class="panel-title">
+                البناء المقترح
+            </div>
+
+
+            <div class="panel-body">
+
+
+                <label class="check no-build">
+                    <input type="checkbox" id="noProposed">
+                    لا يوجد بناء مقترح
+                </label>
+
+                <p class="build-hint">اختر نوع البناء واكتب أبعاده بالمتر (الطول × العرض).</p>
+
+                <div id="proposedTable" class="build-table"></div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- البناء القائم -->
+
+        <section class="panel">
+
+            <div class="panel-title">البناء القائم</div>
+
+            <div class="panel-body">
+
+                <p class="build-hint">اختر نوع البناء الموجود واكتب عدد الكتل وأبعادها بالمتر.</p>
+
+                <div id="existingTable" class="build-table"></div>
+
+                <div class="choice-row">
+                    <span class="choice-title">البناء المخالف</span>
+                    <label class="check"><input type="radio" name="violation" value="يوجد بناء مخالف"> يوجد بناء مخالف</label>
+                    <label class="check"><input type="radio" name="violation" value="لا يوجد بناء مخالف"> لا يوجد بناء مخالف</label>
+                </div>
+
+                <div class="choice-row">
+                    <span class="choice-title">هل يوجد بناء ملاصق بالسور؟</span>
+                    <label class="check"><input type="radio" name="adjacent" value="نعم (مع التحديد في الرسم)"> نعم (مع التحديد في الرسم)</label>
+                    <label class="check"><input type="radio" name="adjacent" value="لا"> لا</label>
+                </div>
+
+                <div id="areaSummary" class="area-summary"></div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- صور الموقع أثناء التفتيش -->
+        <section class="panel">
+            <div class="panel-title">صور الموقع أثناء التفتيش</div>
+            <div class="panel-body">
+                <label for="sitePhotos">إرفاق صور الموقع (يمكن اختيار عدة صور)</label>
+                <button type="button" id="sitePhotoUploadBox" class="upload-box site-photo-upload">
+                    <span class="upload-icon">📷</span>
+                    اضغط لاختيار صور الموقع
+                </button>
+                <input id="sitePhotos" type="file" accept="image/*" multiple hidden>
+                <div id="sitePhotoGallery" class="drawing-gallery" aria-label="صور الموقع المرفقة"></div>
+                <small class="photo-hint">اضغط على أي صورة لمشاهدتها بحجم أكبر.</small>
+            </div>
+        </section>
+
+        <!-- الرسم الكروكي -->
+
+        <section class="panel">
+
+
+            <div class="panel-title">
+                الرسم الكروكي والملاحظات
+            </div>
+
+
+            <div class="panel-body">
+
+
+                <label>
+                    رفع الرسم الكروكي
+                </label>
+
+                <div class="sketch-guide">
+                    <strong>يجب أن يوضّح الرسم:</strong>
+                    <ol>
+                        <li>اتجاه الشمال</li>
+                        <li>المدخل الرئيسي للقطعة</li>
+                        <li>
+                            المباني مع الأبعاد بالمتر:
+                            <span class="swatch yellow"></span> المرخصة
+                            <span class="swatch green"></span> المقترحة
+                            <span class="swatch red"></span> المخالفة
+                        </li>
+                    </ol>
+                </div>
+
+
+                <div
+                    id="uploadBox"
+                    class="upload-box"
+                >
+
+                    <div class="upload-icon">
+                        ☁
+                    </div>
+
+                    اضغط لاختيار صورة أو أكثر للرسم الكروكي
+
+                </div>
+                <div id="drawingGallery" class="drawing-gallery" aria-label="الصور المرفقة"></div>
+                <input
+                    id="file"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    hidden
+                >
+
+
+                <div
+                    class="field"
+                    style="margin-top:12px"
+                >
+
+                    <label>
+                        الملاحظات العامة
+                    </label>
+
+                    <textarea
+                        rows="4"
+                        placeholder="أي ملاحظات إضافية..."
+                    ></textarea>
+
+                </div>
+
+
+                <div
+                    class="field"
+                    style="margin-top:12px"
+                >
+
+                    <label>
+                        الموظف المختص: <span id="assignedEmployee"></span>
+                    </label>
+
+                </div>
+
+                <div class="signature-block">
+                    <span class="choice-title">التوقيع</span>
+                    <canvas id="signaturePad" class="signature-pad" aria-label="خانة التوقيع"></canvas>
+                    <div class="location-actions">
+                        <small class="photo-hint">وقّع بإصبعك أو بالماوس داخل المربع.</small>
+                        <button type="button" class="small-action" onclick="clearSignature()">مسح التوقيع</button>
+                    </div>
+                </div>
+
+
+                <button
+                    class="submit"
+                    onclick="submitReport()"
+                >
+                    إرسال التقرير للمسؤول &nbsp; ♙
+                </button>
+
+
+            </div>
+
+        </section>
+
+
+        <div
+            id="success"
+            class="success hidden"
+        >
+            تم إرسال التقرير للمسؤول بنجاح ✓
+        </div>
+        <div id="reportActions" class="report-actions hidden">
+            <strong>تم حفظ التقرير على هذا الجهاز.</strong>
+            <p>يمكنك حفظ التقرير أو طباعته بصيغة PDF.</p>
+            <div class="action-buttons">
+                <button type="button" class="pdf-button" onclick="downloadReportPDF()">حفظ / طباعة PDF</button>
+            </div>
+        </div>
+
+
+    </main>
+
+</div>
+
+
+
+<!-- =====================================================
+     REVIEWER PAGE
+===================================================== -->
+
+<div
+    id="reviewPage"
+    class="hidden"
+>
+
+
+    <header class="header">
+
+
+        <div class="header-brand"><div class="header-logo"><img src="logo.png" alt="شعار بلدية مدينة الذيد"></div><div class="header-title">
+
+            <strong>
+                تقرير تفتيش تفصيلي
+            </strong>
+
+            <small>
+                لوحة مراجعة التقارير
+            </small>
+
+        </div></div>
+
+
+        <button
+            class="logout"
+            onclick="logout()"
+        >
+            خروج ↪
+        </button>
+
+
+    </header>
+
+
+
+    <main class="review-container">
+
+
+        <!-- الفلاتر -->
+
+        <div class="filters">
+            <button class="filter active" data-filter="all">الكل - <span id="countAll">0</span></button>
+            <button class="filter" data-filter="review">قيد المراجعة - <span id="countReview">0</span></button>
+            <button class="filter" data-filter="accepted">مقبول - <span id="countAccepted">0</span></button>
+            <button class="filter" data-filter="rejected">مرفوض - <span id="countRejected">0</span></button>
+        </div>
+
+        <div id="savedReportsList" aria-live="polite"></div>
+
+
+    </main>
+
+</div>
+
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+
+
+
+    <div id="imageLightbox" class="image-lightbox hidden" onclick="closeDrawingImage()" role="dialog" aria-label="عرض الصورة مكبرة">
+    <button type="button" class="lightbox-close" onclick="event.stopPropagation();closeDrawingImage()" aria-label="إغلاق">×</button>
+    <img id="lightboxImage" src="" alt="الصورة مكبرة" onclick="event.stopPropagation()">
+</div>
+
+<script src="script.js"></script>
+</body>
+
+</html>

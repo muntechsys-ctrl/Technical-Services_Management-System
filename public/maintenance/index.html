@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>تقارير المشاريع وصيانة المرافق | بلدية مدينة الذيد</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ================= التحميل / الدخول مطلوب ================= -->
+
+    <section id="loadingPage" class="center-page">
+        <div class="center-card">
+            <img src="../logo.png" alt="شعار بلدية مدينة الذيد">
+            <p>جاري التحميل...</p>
+        </div>
+    </section>
+
+    <section id="needLoginPage" class="center-page hidden">
+        <div class="center-card">
+            <img src="../logo.png" alt="شعار بلدية مدينة الذيد">
+            <h2>تقارير المشاريع وصيانة المرافق</h2>
+            <p>يرجى تسجيل الدخول من الصفحة الرئيسية أولاً.</p>
+            <a class="primary-btn" href="../" target="_top">الذهاب للصفحة الرئيسية</a>
+        </div>
+    </section>
+
+
+    <!-- ================= المنصة ================= -->
+
+    <div id="appPage" class="app hidden">
+
+        <header class="top-bar">
+            <img class="top-logo" src="../logo.png" alt="شعار بلدية مدينة الذيد">
+            <div class="top-title">
+                <h1>تقارير المشاريع وصيانة المرافق</h1>
+                <p id="userLine"></p>
+            </div>
+        </header>
+
+        <nav class="tabs">
+            <button type="button" class="tab-btn active" data-tab="newTab">＋ تقرير جديد</button>
+            <button type="button" class="tab-btn" data-tab="listTab">▤ التقارير <span id="reportCount" class="count"></span></button>
+            <button type="button" class="tab-btn hidden" id="teamTabBtn" data-tab="teamTab">👥 الفريق</button>
+        </nav>
+
+
+        <!-- غير مضاف للمنصة -->
+
+        <section id="noAccess" class="panel hidden">
+            <p class="empty">لم تتم إضافتك إلى فريق قسم المشاريع وصيانة المرافق بعد. تواصل مع رئيس القسم.</p>
+        </section>
+
+
+        <!-- تقرير جديد -->
+
+        <section id="newTab" class="panel">
+
+            <form id="reportForm">
+
+                <div class="form-row">
+                    <div>
+                        <label for="employeeName">اسم الموظف</label>
+                        <input id="employeeName" readonly>
+                    </div>
+
+                    <div>
+                        <label for="department">القسم</label>
+                        <select id="department" required></select>
+                    </div>
+
+                    <div>
+                        <label for="reportDate">تاريخ التقرير</label>
+                        <input id="reportDate" type="date" required>
+                    </div>
+
+                    <div>
+                        <label for="reportTime">الساعة</label>
+                        <input id="reportTime" type="time" required>
+                    </div>
+                </div>
+
+                <label>نوع التقرير</label>
+                <div id="typeChoices" class="chips"></div>
+
+                <label>الصور</label>
+                <button type="button" id="photoBox" class="upload-box">
+                    <span>📷</span>
+                    اضغط لإضافة صور (حتى 10 صور)
+                </button>
+                <input id="photoInput" type="file" accept="image/*" multiple hidden>
+                <div id="photoPreview" class="thumbs"></div>
+
+                <label for="notes">الملاحظات</label>
+                <textarea id="notes" rows="5" maxlength="4000" placeholder="اكتب تفاصيل العمل والملاحظات..."></textarea>
+
+                <p id="formError" class="error-message" role="alert"></p>
+
+                <button type="submit" id="submitBtn" class="primary-btn wide">إرسال التقرير</button>
+
+            </form>
+
+        </section>
+
+
+        <!-- التقارير -->
+
+        <section id="listTab" class="hidden">
+
+            <div class="filters">
+                <select id="filterDepartment"></select>
+                <select id="filterType"></select>
+            </div>
+
+            <div id="reportsList" class="reports"></div>
+
+        </section>
+
+
+        <!-- الفريق (للمدير ورئيس القسم) -->
+
+        <section id="teamTab" class="hidden">
+
+            <div class="panel">
+                <h3 class="panel-heading">فريق القسم</h3>
+                <p id="teamHint" class="hint"></p>
+
+                <div class="team-form">
+                    <select id="memberUser"></select>
+                    <select id="memberRole"></select>
+                    <button type="button" id="addMemberBtn" class="primary-btn">إضافة</button>
+                </div>
+            </div>
+
+            <div id="teamList" class="reports team-list"></div>
+
+        </section>
+
+    </div>
+
+
+    <!-- تعديل التقرير (للرئيس، أو للموظف إذا أُعيد له) -->
+
+    <dialog id="editDialog" class="edit-dialog">
+        <form id="editForm" method="dialog">
+            <h3 id="editTitle">تعديل التقرير</h3>
+            <p id="editReturnNote" class="return-note hidden"></p>
+
+            <div class="form-row">
+                <div>
+                    <label for="editDate">تاريخ التقرير</label>
+                    <input id="editDate" type="date" required>
+                </div>
+                <div>
+                    <label for="editTime">الساعة</label>
+                    <input id="editTime" type="time" required>
+                </div>
+            </div>
+
+            <label for="editType">نوع التقرير</label>
+            <select id="editType"></select>
+
+            <label for="editNotes">الملاحظات</label>
+            <textarea id="editNotes" rows="6" maxlength="4000"></textarea>
+
+            <div class="report-actions">
+                <button type="submit" id="editSaveBtn" class="primary-btn">حفظ</button>
+                <button type="button" id="editCancelBtn" class="secondary-btn">إلغاء</button>
+            </div>
+        </form>
+    </dialog>
+
+
+    <div id="toast" class="toast hidden"></div>
+
+    <div id="lightbox" class="lightbox hidden">
+        <button type="button" class="lightbox-close" aria-label="إغلاق">×</button>
+        <img id="lightboxImage" alt="الصورة مكبرة">
+    </div>
+
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="../firebase-config.js"></script>
+    <script src="script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>نظام إدارة الخدمات الفنية | بلدية مدينة الذيد</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ================= صفحة التحميل ================= -->
+
+    <section id="loadingPage" class="login-page">
+
+        <div class="login-card">
+
+            <div class="login-logo">
+                <img src="logo.png" alt="شعار بلدية مدينة الذيد">
+                <h2>بلدية مدينة الذيد</h2>
+                <p id="loadingText">جاري التحميل...</p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= إعداد النظام لأول مرة ================= -->
+
+    <section id="setupPage" class="login-page hidden">
+
+        <div class="login-card">
+
+            <div class="login-logo">
+                <img src="logo.png" alt="شعار بلدية مدينة الذيد">
+                <h2>إعداد النظام لأول مرة</h2>
+                <p>أنشئ حساب مدير النظام الرئيسي.</p>
+            </div>
+
+            <form id="setupForm">
+
+                <label for="setupFullName">اسم الموظف</label>
+                <input type="text" id="setupFullName" required>
+
+                <label for="setupUsername">اسم المستخدم</label>
+                <input
+                    type="text"
+                    id="setupUsername"
+                    autocomplete="username"
+                    required
+                >
+
+                <label for="setupPassword">كلمة المرور</label>
+                <input
+                    type="password"
+                    id="setupPassword"
+                    autocomplete="new-password"
+                    required
+                >
+
+                <label for="setupConfirm">تأكيد كلمة المرور</label>
+                <input
+                    type="password"
+                    id="setupConfirm"
+                    autocomplete="new-password"
+                    required
+                >
+
+                <button type="submit" class="primary-btn">
+                    إنشاء الحساب
+                </button>
+
+                <p id="setupError" class="error-message" role="alert"></p>
+
+            </form>
+
+            <p class="demo-note mode-note hidden"></p>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= صفحة تسجيل الدخول ================= -->
+
+    <section id="loginPage" class="login-page hidden">
+
+        <div class="login-card">
+
+            <div class="login-logo">
+                <img src="logo.png" alt="شعار بلدية مدينة الذيد">
+                <h2>بلدية مدينة الذيد</h2>
+                <p>نظام إدارة الخدمات الفنية</p>
+            </div>
+
+            <form id="loginForm">
+
+                <label for="loginUsername">اسم المستخدم</label>
+                <input
+                    type="text"
+                    id="loginUsername"
+                    autocomplete="username"
+                    required
+                >
+
+                <label for="loginPassword">كلمة المرور</label>
+                <input
+                    type="password"
+                    id="loginPassword"
+                    autocomplete="current-password"
+                    required
+                >
+
+                <button type="submit" class="primary-btn">
+                    تسجيل الدخول
+                </button>
+
+                <p id="loginError" class="error-message" role="alert"></p>
+
+            </form>
+
+            <p class="demo-note mode-note hidden"></p>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= النظام الرئيسي ================= -->
+
+    <div id="systemMain" class="hidden">
+
+        <div class="app-shell">
+
+            <!-- ================= الشريط العلوي ================= -->
+
+            <header class="top-bar">
+
+                <img class="top-logo" src="logo.png" alt="شعار بلدية مدينة الذيد">
+
+                <div class="top-title">
+                    <h1>بلدية مدينة الذيد</h1>
+                    <p>نظام إدارة الخدمات الفنية</p>
+                </div>
+
+                <div class="top-actions">
+
+                    <button type="button" id="languageBtn" class="icon-btn" title="English / عربي">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18"/><path d="M12 3a14 14 0 0 0 0 18"/></svg>
+                    </button>
+
+                    <button type="button" class="icon-btn" data-page="dashboardPage" title="الرئيسية">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg>
+                    </button>
+
+                    <button type="button" id="profileBtn" class="icon-btn" title="حسابي">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.5 18.5a6.5 6.5 0 0 1 11 0"/></svg>
+                    </button>
+
+                    <button type="button" id="logoutBtn" class="icon-btn logout" title="تسجيل الخروج">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M14 7l-5 5 5 5"/><path d="M9 12h12"/></svg>
+                    </button>
+
+                </div>
+
+                <div id="profileMenu" class="profile-menu hidden">
+                    <strong id="currentUserName"></strong>
+                    <span id="currentUserRole"></span>
+                    <span id="currentUserDepartment"></span>
+                </div>
+
+            </header>
+
+
+            <!-- ================= محتوى النظام ================= -->
+
+            <main class="main-content">
+
+
+                <!-- الصفحة الرئيسية -->
+
+                <section id="dashboardPage" class="page">
+
+                    <div class="section-title">
+                        <h2 id="myPlatformsTitle">منصاتي</h2>
+                    </div>
+
+                    <div id="dashboardPlatforms" class="tile-grid"></div>
+
+                    <div class="admin-only hidden">
+
+                        <div class="section-title">
+                            <h2 id="adminToolsTitle">أدوات الإدارة</h2>
+                        </div>
+
+                        <div class="tile-grid">
+
+                            <button type="button" class="tile" data-page="platformsPage" style="--tile-color:#b08d57">
+                                <div class="tile-icon">⚙️</div>
+                                <strong>Platforms</strong>
+                                <span>إدارة المنصات</span>
+                            </button>
+
+                            <button type="button" class="tile" data-page="usersPage" style="--tile-color:#5b8def">
+                                <div class="tile-icon">👤</div>
+                                <strong>Users &amp; Permissions</strong>
+                                <span>المستخدمون والصلاحيات</span>
+                            </button>
+
+                            <button type="button" class="tile" data-page="auditPage" style="--tile-color:#3fae6b">
+                                <div class="tile-icon">📜</div>
+                                <strong>Audit Log</strong>
+                                <span>سجل التغييرات</span>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ================= إدارة المنصات ================= -->
+
+                <section id="platformsPage" class="page hidden">
+
+                    <div class="page-heading">
+                        <h2>إدارة المنصات</h2>
+                        <p>إضافة وتعديل المنصات الإلكترونية وتحديد الأقسام التابعة لها.</p>
+                    </div>
+
+                    <div class="panel">
+
+                        <h3>إضافة أو تعديل منصة</h3>
+
+                        <form id="platformForm">
+
+                            <input type="hidden" id="platformId">
+
+                            <div class="form-row">
+
+                                <div>
+                                    <label for="platformName">اسم المنصة (عربي)</label>
+                                    <input type="text" id="platformName" required placeholder="مثال: نطاقات المفتشين">
+                                </div>
+
+                                <div>
+                                    <label for="platformNameEn">اسم المنصة (English)</label>
+                                    <input type="text" id="platformNameEn" dir="ltr" placeholder="Inspectors Zones">
+                                </div>
+
+                                <div>
+                                    <label for="platformUrl">رابط المنصة</label>
+                                    <input type="url" id="platformUrl" required dir="ltr" placeholder="https://...">
+                                </div>
+
+                                <div>
+                                    <label for="platformDepartment">القسم التابع له</label>
+                                    <input type="text" id="platformDepartment" required placeholder="مثال: شعبة التفتيش والمتابعة">
+                                </div>
+
+                                <div>
+                                    <label for="platformIcon">الأيقونة</label>
+                                    <select id="platformIcon">
+                                        <option>🗺️</option>
+                                        <option>💬</option>
+                                        <option>👥</option>
+                                        <option>📋</option>
+                                        <option>📁</option>
+                                        <option>📞</option>
+                                        <option>📅</option>
+                                        <option>✍️</option>
+                                        <option>🏗️</option>
+                                        <option>📦</option>
+                                        <option>💡</option>
+                                        <option>✉️</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="platformColor">لون البطاقة</label>
+                                    <input type="color" id="platformColor" value="#b08d57" style="height:46px;padding:4px">
+                                </div>
+
+                            </div>
+
+                            <div class="form-actions">
+
+                                <button type="submit" class="primary-btn">
+                                    حفظ المنصة
+                                </button>
+
+                                <button type="reset" class="secondary-btn">
+                                    إلغاء
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                    <div class="panel">
+
+                        <h3>المنصات المسجلة</h3>
+
+                        <div id="platformsList" class="card-grid"></div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ================= إدارة المستخدمين ================= -->
+
+                <section id="usersPage" class="page hidden">
+
+                    <div class="page-heading">
+                        <h2>المستخدمون والصلاحيات</h2>
+                        <p>إدارة الحسابات وتحديد المنصات المسموحة لكل مستخدم.</p>
+                    </div>
+
+                    <div class="panel">
+
+                        <h3>إضافة أو تعديل مستخدم</h3>
+
+                        <form id="userForm">
+
+                            <input type="hidden" id="userId">
+
+                            <label for="userFullName">
+                                اسم الموظف
+                            </label>
+
+                            <input
+                                type="text"
+                                id="userFullName"
+                                required
+                            >
+
+                            <label for="userUsername">
+                                اسم المستخدم
+                            </label>
+
+                            <input
+                                type="text"
+                                id="userUsername"
+                                autocomplete="off"
+                                required
+                            >
+
+                            <label for="userPassword">
+                                كلمة المرور
+                            </label>
+
+                            <input
+                                type="password"
+                                id="userPassword"
+                                autocomplete="new-password"
+                                minlength="6"
+                            >
+
+                            <p id="userPasswordHint" class="field-hint"></p>
+
+                            <label for="userDepartment">
+                                القسم
+                            </label>
+
+                            <input
+                                type="text"
+                                id="userDepartment"
+                                list="departmentNames"
+                                required
+                            >
+                            <datalist id="departmentNames"></datalist>
+
+                            <label for="userSection">
+                                الشعبة أو المكتب (اختياري)
+                            </label>
+
+                            <input
+                                type="text"
+                                id="userSection"
+                                list="sectionNames"
+                                placeholder="مثال: شعبة التفتيش"
+                            >
+                            <datalist id="sectionNames"></datalist>
+
+                            <label for="userOrgTitle">
+                                المنصب في الهيكل التنظيمي
+                            </label>
+
+                            <select id="userOrgTitle">
+                                <option value="">حسب الدور الوظيفي</option>
+                                <option value="director">مدير الإدارة</option>
+                                <option value="department_head">رئيس قسم</option>
+                                <option value="section_head">رئيس شعبة / مسؤول مكتب</option>
+                                <option value="employee">موظف</option>
+                            </select>
+
+                            <label for="userRole">
+                                الدور الوظيفي
+                            </label>
+
+                            <select id="userRole" required>
+
+                                <option value="">
+                                    اختر الدور
+                                </option>
+
+                                <option value="super_admin">
+                                    مدير النظام الرئيسي
+                                </option>
+
+                                <option value="director">
+                                    مدير الإدارة
+                                </option>
+
+                                <option value="department_head">
+                                    رئيس القسم
+                                </option>
+
+                                <option value="employee">
+                                    موظف
+                                </option>
+
+                            </select>
+
+                            <h3>المنصات المسموحة</h3>
+
+                            <p class="field-hint">
+                                مدير النظام الرئيسي يرى جميع المنصات تلقائياً.
+                            </p>
+
+                            <div
+                                id="userPlatformPermissions"
+                                class="permissions-list"
+                            ></div>
+
+                            <h3>صلاحيات الإجراءات</h3>
+
+                            <div class="permissions-list">
+
+                                <label class="check-label">
+                                    <input
+                                        type="checkbox"
+                                        id="permissionApprove"
+                                    >
+                                    الموافقة
+                                </label>
+
+                                <label class="check-label">
+                                    <input
+                                        type="checkbox"
+                                        id="permissionReject"
+                                    >
+                                    الرفض
+                                </label>
+
+                            </div>
+
+                            <div class="form-actions">
+
+                                <button type="submit" class="primary-btn">
+                                    حفظ المستخدم
+                                </button>
+
+                                <button
+                                    type="reset"
+                                    class="secondary-btn"
+                                >
+                                    إلغاء
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                    <div class="panel">
+
+                        <h3>المستخدمون المسجلون</h3>
+
+                        <input
+                            type="search"
+                            id="userSearch"
+                            class="user-search"
+                            placeholder="🔍 ابحث باسم الموظف أو اسم المستخدم أو القسم أو الشعبة"
+                        >
+
+                        <div class="table-wrap">
+
+                            <table>
+
+                                <thead>
+                                    <tr>
+                                        <th>الموظف</th>
+                                        <th>اسم المستخدم</th>
+                                        <th>القسم</th>
+                                        <th>الدور</th>
+                                        <th>المنصات</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="usersList"></tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ================= سجل التغييرات ================= -->
+
+                <section id="auditPage" class="page hidden">
+
+                    <div class="page-heading">
+                        <h2>سجل التغييرات</h2>
+                        <p>توثيق العمليات الإدارية داخل النظام الموحد.</p>
+                    </div>
+
+                    <div class="panel">
+
+                        <div class="table-wrap">
+
+                            <table>
+
+                                <thead>
+                                    <tr>
+                                        <th>التاريخ والوقت</th>
+                                        <th>المستخدم</th>
+                                        <th>المنصة</th>
+                                        <th>الإجراء</th>
+                                        <th>التفاصيل</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="auditTableBody"></tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ================= ملاحظاتي (لكل موظف، خاصة به) ================= -->
+
+                <section id="notesPage" class="page hidden">
+
+                    <div class="page-heading">
+                        <h2>📝 ملاحظاتي</h2>
+                        <p>مساحتك الخاصة: لا يقرأ ملاحظاتك أحد غيرك، ولا حتى مدير النظام.</p>
+                    </div>
+
+                    <div class="panel">
+                        <form id="noteForm">
+                            <input type="hidden" id="noteId">
+
+                            <label for="noteTitle">العنوان (اختياري)</label>
+                            <input type="text" id="noteTitle" maxlength="150">
+
+                            <label for="noteText">الملاحظة</label>
+                            <textarea id="noteText" rows="5" maxlength="10000" required></textarea>
+
+                            <div class="form-actions">
+                                <button type="submit" class="primary-btn" id="noteSaveBtn">حفظ الملاحظة</button>
+                                <button type="reset" class="secondary-btn">إلغاء</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <input type="search" id="noteSearch" class="user-search" placeholder="🔍 ابحث في ملاحظاتك">
+
+                    <div id="notesList" class="card-grid"></div>
+
+                </section>
+
+
+                <!-- ================= الهيكل التنظيمي (للجميع) ================= -->
+
+                <section id="orgPage" class="page hidden">
+
+                    <div class="page-heading">
+                        <h2>الهيكل التنظيمي</h2>
+                        <p id="orgHint">يُرسم تلقائياً من بيانات الموظفين (القسم، الشعبة، المنصب).</p>
+                    </div>
+
+                    <div id="orgChart" class="org-chart"></div>
+
+                </section>
+
+
+                <!-- ================= عرض المنصة ================= -->
+
+                <section id="platformViewerPage" class="page hidden">
+
+                    <div class="viewer-header">
+
+                        <h2 id="viewerTitle">المنصة</h2>
+
+                        <div class="form-actions">
+
+                            <a
+                                id="viewerNewTab"
+                                class="secondary-btn"
+                                target="_blank"
+                                rel="noopener"
+                            >
+                                فتح في نافذة جديدة
+                            </a>
+
+                            <button
+                                type="button"
+                                class="secondary-btn"
+                                id="backToDashboard"
+                            >
+                                العودة للرئيسية
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <div class="iframe-container">
+
+                        <iframe
+                            id="platformFrame"
+                            title="المنصة الإلكترونية"
+                            referrerpolicy="strict-origin-when-cross-origin"
+                        ></iframe>
+
+                    </div>
+
+                </section>
+
+
+            </main>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= JavaScript ================= -->
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="script.js"></script>
+
+</body>
+</html>

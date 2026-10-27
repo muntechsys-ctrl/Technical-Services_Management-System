@@ -1,0 +1,1039 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>نظام إدارة نطاقات المفتشين</title>
+
+  <!-- رقم الإصدار يجبر المتصفح على تحميل النسخة الجديدة بعد كل تحديث -->
+  <link rel="stylesheet" href="style.css?v=9">
+
+  <!-- قاعدة البيانات المشتركة (Firebase) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js" defer></script>
+  <script src="firebase-config.js?v=3" defer></script>
+
+  <script src="script.js?v=12" defer></script>
+</head>
+
+<body>
+
+  <!-- ================= شاشة التحميل ================= -->
+
+  <div id="loadingPage" class="entry-page">
+    <div class="entry-card">
+      <img src="Dhaid logo.png" class="login-logo" alt="شعار بلدية مدينة الذيد">
+      <h1>نظام إدارة نطاقات المفتشين</h1>
+      <p id="loadingMessage">جاري الاتصال بقاعدة البيانات...</p>
+    </div>
+  </div>
+
+  <!-- ================= الصفحة الرئيسية ================= -->
+
+  <div id="entryPage" class="entry-page hidden">
+    <div class="entry-card">
+      <img src="Dhaid logo.png" class="login-logo" alt="شعار بلدية مدينة الذيد">
+
+      <h1>نظام إدارة نطاقات المفتشين</h1>
+      <p>بلدية مدينة الذيد | الإدارة الهندسية</p>
+      <p>يرجى اختيار بوابة الدخول</p>
+
+      <div class="entry-buttons">
+        <button type="button" onclick="openPortal('admin')">
+          دخول الإدارة
+        </button>
+
+        <button type="button" onclick="openPortal('inspector')">
+          دخول المفتشين
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= تسجيل الدخول ================= -->
+
+  <div id="loginPage" class="entry-page hidden">
+    <div class="entry-card login-card">
+
+      <img src="Dhaid logo.png" class="login-logo small-logo" alt="شعار البلدية">
+
+      <h2 id="loginTitle">تسجيل الدخول</h2>
+
+      <form id="loginForm">
+        <div class="field">
+          <label for="loginName">اسم المستخدم</label>
+          <select id="loginName" required></select>
+        </div>
+
+        <div class="field">
+          <label for="loginPassword">كلمة المرور</label>
+          <input id="loginPassword" type="password" required>
+        </div>
+
+        <p id="loginError" class="login-error hidden"></p>
+
+        <div class="actions">
+          <button type="submit">دخول</button>
+
+          <button type="button" class="secondary" onclick="backToEntry()">
+            رجوع
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= النظام ================= -->
+
+  <div id="systemMain" class="hidden">
+
+    <header class="system-header">
+      <h1>نظام إدارة نطاقات المفتشين</h1>
+      <p>بلدية مدينة الذيد | الإدارة الهندسية</p>
+
+      <div class="user-info">
+        <span id="currentUserName"></span>
+        <span id="currentUserRole"></span>
+      </div>
+    </header>
+
+    <!-- ================= قائمة الإدارة ================= -->
+
+    <nav id="supervisorNav" class="hidden">
+
+      <button type="button" onclick="showPage('zonesPage')">
+        النطاقات
+      </button>
+
+      <button type="button" onclick="showPage('inspectorsPage')">
+        إدارة المفتشين
+      </button>
+
+      <button type="button" onclick="showPage('approvalsPage')">
+        طلبات الاعتماد
+        <span id="approvalCount" class="approval-count" hidden></span>
+      </button>
+
+      <button type="button" onclick="showPage('supervisorReportsPage')">
+        التقارير الأسبوعية
+        <span id="weeklyReportCount" class="approval-count" hidden></span>
+      </button>
+
+      
+      <button
+           type="button"
+           id="historyNav"
+           class="hidden"
+           onclick="showPage('historyPage')">
+         سجل التغييرات
+      </button>
+
+      <button
+        type="button"
+        id="usersManagementNav"
+        class="hidden"
+        onclick="showPage('usersPage')"
+      >
+        المستخدمون والصلاحيات
+      </button>
+
+      <button type="button" class="logout-btn" onclick="logoutPortal()">
+        تسجيل الخروج
+      </button>
+
+    </nav>
+
+    <!-- ================= قائمة المفتش ================= -->
+
+    <nav id="inspectorNav" class="hidden">
+
+      <button type="button" onclick="showPage('inspectorDashboardPage')">
+        نطاقات التفتيش
+      </button>
+
+      <button type="button" onclick="showPage('weeklyReportsPage')">
+        التقرير الأسبوعي
+      </button>
+
+      <button type="button" onclick="showPage('inspectorRequestPage')">
+        طلب تعيين بديل
+      </button>
+
+      <button type="button" class="logout-btn" onclick="logoutPortal()">
+        تسجيل الخروج
+      </button>
+
+    </nav>
+
+    <main>
+
+      <!-- ================= إدارة النطاقات ================= -->
+
+      <section id="zonesPage" class="hidden">
+
+        <div id="adminGeneralNotes" class="panel general-notes"></div>
+
+        <div class="panel">
+          <h2>إدارة نطاقات التفتيش</h2>
+
+          <div id="alerts"></div>
+
+          <div class="toolbar">
+            <input
+              id="search"
+              type="search"
+              placeholder="البحث عن نطاق أو مفتش أو منطقة"
+              oninput="renderZones()"
+            >
+
+            <button type="button" onclick="openZone()">
+              + إضافة نطاق
+            </button>
+          </div>
+
+          <!-- ================= مسؤولو النطاقات الميدانية ================= -->
+
+          <div class="field-supervisors">
+            <h3>مسؤولو النطاقات الميدانية</h3>
+            <p>اضغطي على المسؤول لإظهار النطاقات التابعة له.</p>
+            <div id="fieldSupervisors" class="field-supervisors-grid"></div>
+          </div>
+        </div>
+
+        <div id="zones" class="cards"></div>
+
+        <div class="inspection-rules">
+          <h2>التعليمات والضوابط التنظيمية لأعمال التفتيش</h2>
+
+          <ol>
+            <li>
+              تقارير يومية مفصلة بجميع أعمال التفتيش والمخالفات
+              ترسل إلى رئيس قسم الهندسة ورقابة المباني،
+              ونسخة ورقية من المخالفات والإنذارات إلى رئيس الشعبة،
+              حيث يتم إنشاء ملف ورقي لكل منطقة بالمخالفات والإنذارات.
+            </li>
+
+            <li>
+              يمنع الخروج لأكثر من مفتش أو مهندس لمعاملة واحدة
+              (حسب توزيع المناطق)، إلا في حال تشكيل لجنة
+              من قبل مدير الإدارة أو رئيس القسم
+              أو عدم وجود سيارة.
+            </li>
+
+            <li>
+              يتم تكليف المفتش من قبل رئيس القسم لمناطق إضافية
+              على مناطق نطاقه بحسب وضع القسم.
+            </li>
+
+            <li>
+              عند طلب إجازة من قبل المفتش يجب التنسيق مع البديل
+              وتوضيح الأعمال المتوقفة لاستكمالها من قبل البديل
+              لاعتماد الإجازة.
+            </li>
+          </ol>
+        </div>
+
+      </section>
+
+      <!-- ================= إدارة المفتشين ================= -->
+
+      <section id="inspectorsPage" class="hidden">
+
+        <div class="panel">
+          <h2>إدارة المفتشين</h2>
+
+          <div class="toolbar">
+            <input
+              id="newInspector"
+              placeholder="الاسم الثلاثي للمفتش"
+            >
+
+            <button type="button" onclick="addInspector()">
+              إضافة مفتش
+            </button>
+          </div>
+
+          <div id="inspectorsList" class="card-grid"></div>
+        </div>
+
+      </section>
+
+      <!-- ================= طلبات اعتماد البدلاء ================= -->
+
+      <section id="approvalsPage" class="hidden">
+
+        <div class="panel">
+          <h2>طلبات تعيين البدلاء</h2>
+
+          <p>
+            مراجعة طلبات المفتشين، وتحديد المفتش البديل
+            أو تعديل الاختيار المقترح، ثم اعتماد الطلب أو رفضه.
+          </p>
+
+          <div id="replacementApprovals" class="card-grid"></div>
+        </div>
+
+      </section>
+
+      <!-- ================= التقارير لدى الإدارة ================= -->
+
+      <section id="supervisorReportsPage" class="hidden">
+
+        <div class="panel">
+          <h2>متابعة التقارير الأسبوعية</h2>
+
+          <p>
+            متابعة التقارير المستلمة والتقارير التي لم يتم إرسالها بعد.
+          </p>
+
+          <div class="missing-reports-section">
+            <h3>المفتش الذي لم يرسل التقرير بعد</h3>
+
+            <p id="missingReportsWeek" class="week-range"></p>
+
+            <div id="missingReportsList" class="name-list"></div>
+
+            <div
+              id="missingWeeklyReports"
+              class="name-list"
+              hidden
+            ></div>
+          </div>
+
+          <!-- ================= التذكيرات ================= -->
+
+          <div class="reminder-box">
+
+            <h3>تذكير المفتش بالتقرير الأسبوعي</h3>
+            <p>اختاري اسم المفتش المطلوب تذكيره:</p>
+
+            <div
+              id="reminderInspectors"
+              class="reminder-inspectors"
+            ></div>
+
+            <div class="field">
+              <label for="reminderNote">ملاحظة التذكير</label>
+
+              <textarea
+                id="reminderNote"
+                rows="4"
+                placeholder="اكتبي الملاحظة التي تريدين ظهورها للمفتش..."
+              ></textarea>
+            </div>
+
+            <button type="button" onclick="sendWeeklyReminder()">
+              إرسال التذكير
+            </button>
+
+            <p
+              id="reminderResult"
+              class="success-message hidden"
+            ></p>
+          </div>
+
+          <h3>التقارير الأسبوعية المستلمة</h3>
+
+          <div id="weeklyReportsList" class="card-grid"></div>
+
+        </div>
+      </section>
+
+      <!-- ================= سجل التغييرات ================= -->
+
+      
+<!-- ================= سجل التغييرات ================= -->
+
+<section id="historyPage" class="hidden">
+
+    <div class="panel">
+
+        <h2>سجل التغييرات</h2>
+
+        <p>
+            جميع العمليات المسجلة مع اسم منفذ الإجراء
+            وتاريخ ووقت التنفيذ.
+        </p>
+
+        <div class="actions">
+            <button
+                type="button"
+                class="danger"
+                onclick="clearHistory()"
+            >
+                حذف السجل بالكامل
+            </button>
+        </div>
+
+        <div id="historyList" class="card-grid"></div>
+
+    </div>
+
+</section>
+
+
+      <!-- ================= إدارة المستخدمين ================= -->
+
+      <section id="usersPage" class="hidden">
+
+        <div class="panel">
+          <h2>إدارة المستخدمين والصلاحيات</h2>
+
+          <form id="userForm">
+
+            <input type="hidden" id="editUserId">
+
+            <div class="form-grid">
+
+              <div class="field">
+                <label for="userName">الاسم الثلاثي</label>
+                <input id="userName" required>
+              </div>
+
+              <div class="field">
+                <label for="userRole">الدور الوظيفي</label>
+
+                <select id="userRole" required>
+                  <option value="super_admin">المسؤول الرئيسي</option>
+                  <option value="manager">مدير الإدارة</option>
+                  <option value="department_head">رئيس القسم</option>
+                  <option value="inspector">مفتش</option>
+                </select>
+              </div>
+
+            </div>
+
+            <div class="field">
+              <label for="userPassword">كلمة المرور</label>
+
+              <input
+                id="userPassword"
+                type="password"
+                autocomplete="new-password"
+              >
+            </div>
+
+            <div class="actions">
+              <button type="submit">حفظ المستخدم</button>
+              <button type="reset" class="secondary">إلغاء</button>
+            </div>
+
+          </form>
+        </div>
+
+        <div class="panel">
+          <h2>المستخدمون المسجلون</h2>
+          <div id="usersList" class="card-grid"></div>
+        </div>
+
+        <!-- ================= النسخ الاحتياطي ================= -->
+
+        <div class="panel">
+          <h2>النسخ الاحتياطي واستعادة البيانات</h2>
+
+          <p>
+            يمكن للمسؤول الرئيسي تنزيل نسخة احتياطية
+            من بيانات النظام واستعادتها عند الحاجة.
+          </p>
+
+          <div class="actions">
+            <button type="button" onclick="downloadBackup()">
+              تنزيل النسخة الاحتياطية
+            </button>
+          </div>
+
+          <div class="field">
+            <label for="backupImportFile">
+              استعادة نسخة احتياطية كاملة
+            </label>
+
+            <input
+              id="backupImportFile"
+              type="file"
+              accept=".json,application/json"
+              onchange="importBackupFile(event)"
+            >
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= لوحة المفتش ================= -->
+
+      <section id="inspectorDashboardPage" class="hidden">
+
+        <div
+          id="inspectorWelcome"
+          class="inspector-welcome"
+        ></div>
+
+        <div
+          id="inspectorFieldSupervisor"
+          class="inspector-field-supervisor"
+          hidden
+        ></div>
+
+        <div id="inspectorGeneralNotes" class="panel general-notes"></div>
+
+        <div class="panel inspector-zones-panel">
+          <h2>نطاقات التفتيش</h2>
+
+          <p>
+            النطاق الأساسي يظهر باللون الأخضر،
+            والنطاقات الإضافية المعتمدة تظهر باللون البنفسجي
+            خلال فترة التكليف.
+          </p>
+
+          <p>
+            يرجى الاطلاع على التكليفات الإضافية
+            والإقرار باستلام كل تكليف.
+          </p>
+
+          <div id="inspectorZones" class="cards"></div>
+        </div>
+
+      </section>
+
+      <!-- ================= طلب المفتش البديل ================= -->
+
+      <section id="inspectorRequestPage" class="hidden">
+
+        <div class="panel">
+          <h2>طلب تعيين مفتش بديل</h2>
+
+          <p>
+            يمكنك اقتراح مفتش بديل أو ترك اختيار البديل
+            للإدارة عند مراجعة الطلب.
+          </p>
+
+          <form id="inspectorRequestForm">
+
+            <div class="field">
+              <label for="requestOwner">اسم المفتش</label>
+              <select id="requestOwner" required></select>
+            </div>
+
+            <div class="field">
+              <label for="requestZone">النطاق</label>
+              <select id="requestZone" required></select>
+            </div>
+
+            <div class="field">
+              <label for="requestReplacement">
+                المفتش البديل المقترح (اختياري)
+              </label>
+
+              <select id="requestReplacement"></select>
+
+              <small>
+                يمكن ترك الاختيار فارغاً لتحديد البديل من الإدارة.
+              </small>
+            </div>
+
+            <div class="form-grid">
+
+              <div class="field">
+                <label for="requestStart">تاريخ البداية</label>
+                <input id="requestStart" type="date" required>
+              </div>
+
+              <div class="field">
+                <label for="requestEnd">تاريخ النهاية</label>
+                <input id="requestEnd" type="date" required>
+              </div>
+
+            </div>
+
+            <div class="field">
+              <label for="requestReason">سبب الطلب</label>
+
+              <textarea
+                id="requestReason"
+                rows="4"
+                required
+              ></textarea>
+            </div>
+
+            <button type="submit">
+              إرسال طلب الاعتماد
+            </button>
+
+          </form>
+        </div>
+
+      </section>
+
+      <!-- ================= التقرير الأسبوعي ================= -->
+
+      <section id="weeklyReportsPage" class="hidden">
+
+        <div class="panel">
+
+          <h2>التقرير الأسبوعي للمفتش</h2>
+
+          <div class="report-week-heading">
+            <h3 id="inspectorWeekTitle">الأسبوع الحالي</h3>
+            <p id="inspectorWeekDates"></p>
+          </div>
+
+          <div id="inspectorWeeklyReminder"></div>
+
+          <p>
+            يمكنك تسجيل الأعمال المنجزة يومياً،
+            وسيتم حفظ المسودة تلقائياً أثناء الكتابة.
+            لن يظهر التقرير لدى الإدارة كتقرير مستلم
+            إلا بعد الضغط على زر إرسال التقرير الأسبوعي.
+          </p>
+
+          <form id="weeklyReportForm">
+
+            <div class="field">
+              <label for="weeklyInspector">اسم المفتش</label>
+              <select id="weeklyInspector" required></select>
+            </div>
+
+            <!-- الاثنين -->
+
+            <div class="field">
+              <label for="reportMonday">
+                الاثنين
+                <small id="mondayDate"></small>
+              </label>
+
+              <textarea
+                id="reportMonday"
+                rows="5"
+                placeholder="اكتب الأعمال المنجز يوم الاثنين..."
+              ></textarea>
+            </div>
+
+            <!-- الثلاثاء -->
+
+            <div class="field">
+              <label for="reportTuesday">
+                الثلاثاء
+                <small id="tuesdayDate"></small>
+              </label>
+
+              <textarea
+                id="reportTuesday"
+                rows="5"
+                placeholder="اكتب الأعمال المنجز يوم الثلاثاء..."
+              ></textarea>
+            </div>
+
+            <!-- الأربعاء -->
+
+            <div class="field">
+              <label for="reportWednesday">
+                الأربعاء
+                <small id="wednesdayDate"></small>
+              </label>
+
+              <textarea
+                id="reportWednesday"
+                rows="5"
+                placeholder="اكتب الأعمال المنجز يوم الأربعاء..."
+              ></textarea>
+            </div>
+
+            <!-- الخميس -->
+
+            <div class="field">
+              <label for="reportThursday">
+                الخميس
+                <small id="thursdayDate"></small>
+              </label>
+
+              <textarea
+                id="reportThursday"
+                rows="5"
+                placeholder="اكتب الأعمال المنجز يوم الخميس..."
+              ></textarea>
+            </div>
+
+            <!-- ================= المعاملات المنجزة ================= -->
+
+            <div class="field">
+              <h3>المعاملات المنجزة</h3>
+
+              <div class="table-scroll">
+                <table class="transactions-table">
+                  <thead>
+                    <tr>
+                      <th>م</th>
+                      <th>المعاملة</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="transactionsBody"></tbody>
+                </table>
+              </div>
+
+              <button
+                type="button"
+                class="secondary add-transaction"
+                onclick="addTransactionRow()"
+              >
+                + إضافة معاملة
+              </button>
+            </div>
+
+            <!-- ================= إحصائيات التفتيش ================= -->
+
+            <div class="field">
+              <h3>إحصائيات أعمال التفتيش الأسبوعية</h3>
+              <p>يرجى إدخال الأعداد لكل يوم.</p>
+            </div>
+
+            <div class="form-grid">
+
+              <div class="field">
+                <label for="mondayViolations">مخالفات الاثنين</label>
+                <input id="mondayViolations" type="number" min="0" step="1" value="0">
+              </div>
+
+              <div class="field">
+                <label for="mondayReports">محاضر ضبط الاثنين</label>
+                <input id="mondayReports" type="number" min="0" step="1" value="0">
+              </div>
+
+              <div class="field">
+                <label for="tuesdayViolations">مخالفات الثلاثاء</label>
+                <input id="tuesdayViolations" type="number" min="0" step="1" value="0">
+              </div>
+
+              <div class="field">
+                <label for="tuesdayReports">محاضر ضبط الثلاثاء</label>
+                <input id="tuesdayReports" type="number" min="0" step="1" value="0">
+              </div>
+
+              <div class="field">
+                <label for="wednesdayViolations">مخالفات الأربعاء</label>
+                <input id="wednesdayViolations" type="number" min="0" step="1" value="0">
+              </div>
+
+              <div class="field">
+                <label for="wednesdayReports">محاضر ضبط الأربعاء</label>
+                <input id="wednesdayReports" type="number" min="0" step="1" value="0">
+              </div>
+
+              <div class="field">
+                <label for="thursdayViolations">مخالفات الخميس</label>
+                <input id="thursdayViolations" type="number" min="0" step="1" value="0">
+              </div>
+
+              <div class="field">
+                <label for="thursdayReports">محاضر ضبط الخميس</label>
+                <input id="thursdayReports" type="number" min="0" step="1" value="0">
+              </div>
+
+            </div>
+
+            <!-- ================= حالة المسودة ================= -->
+
+            <p
+              id="weeklyDraftStatus"
+              class="weekly-draft-status"
+              aria-live="polite"
+            >
+              لم يتم حفظ مسودة بعد.
+            </p>
+
+            <div class="actions">
+
+              <button
+                type="button"
+                id="saveWeeklyDraftButton"
+                class="secondary"
+                onclick="saveWeeklyDraft(true)"
+              >
+                حفظ المسودة بدون إرسال
+              </button>
+
+              <button type="submit">
+                إرسال التقرير الأسبوعي
+              </button>
+
+            </div>
+
+          </form>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ================= نافذة إضافة وتعديل النطاق ================= -->
+
+  <dialog id="zoneDialog">
+
+    <h2 id="zoneTitle">إضافة نطاق</h2>
+
+    <form id="zoneForm">
+
+      <input type="hidden" id="zoneId">
+
+      <div class="field">
+        <label for="zoneName">اسم النطاق</label>
+        <input id="zoneName" required>
+      </div>
+
+      <div class="field">
+        <label for="zoneInspector">المفتش الأساسي</label>
+        <select id="zoneInspector" required></select>
+      </div>
+
+      <div class="field">
+        <label for="zoneAreas">المناطق التابعة</label>
+
+        <textarea
+          id="zoneAreas"
+          rows="5"
+          placeholder="كل منطقة في سطر"
+        ></textarea>
+      </div>
+
+      <div class="actions">
+        <button type="submit">حفظ</button>
+
+        <button
+          type="button"
+          class="secondary"
+          onclick="document.getElementById('zoneDialog').close()"
+        >
+          إلغاء
+        </button>
+      </div>
+
+    </form>
+  </dialog>
+
+  <!-- ================= نافذة مسؤول النطاق الميداني ================= -->
+
+  <dialog id="fieldSupervisorDialog">
+
+    <h2 id="fieldSupervisorTitle">مسؤول النطاق الميداني</h2>
+
+    <form id="fieldSupervisorForm">
+
+      <input type="hidden" id="fieldSupervisorId">
+
+      <datalist id="peopleNames"></datalist>
+
+      <div class="field">
+        <label for="fieldSupervisorName">اسم الزر</label>
+        <input id="fieldSupervisorName" required>
+      </div>
+
+      <div class="field">
+        <label for="fieldSupervisorPerson">المسؤول الأساسي</label>
+        <input
+          id="fieldSupervisorPerson"
+          list="peopleNames"
+          placeholder="اختاري أو اكتبي الاسم"
+        >
+      </div>
+
+      <div class="field">
+        <label>النطاقات التابعة له</label>
+        <div id="fieldSupervisorZones" class="zone-checkboxes"></div>
+      </div>
+
+      <h3>تكليف مؤقت (اختياري)</h3>
+      <p>
+        خلال فترة التكليف يظهر الشخص المكلف بدل المسؤول الأساسي،
+        وبعد انتهاء الفترة يرجع المسؤول الأساسي تلقائياً.
+      </p>
+
+      <div class="field">
+        <label for="fieldSupervisorTempPerson">الشخص المكلف</label>
+        <input
+          id="fieldSupervisorTempPerson"
+          list="peopleNames"
+          placeholder="اتركيه فارغاً إذا لا يوجد تكليف"
+        >
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="fieldSupervisorTempStart">من تاريخ</label>
+          <input id="fieldSupervisorTempStart" type="date">
+        </div>
+
+        <div class="field">
+          <label for="fieldSupervisorTempEnd">إلى تاريخ</label>
+          <input id="fieldSupervisorTempEnd" type="date">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit">حفظ</button>
+
+        <button
+          type="button"
+          class="secondary"
+          onclick="document.getElementById('fieldSupervisorDialog').close()"
+        >
+          إلغاء
+        </button>
+      </div>
+
+    </form>
+  </dialog>
+
+  <!-- ================= نافذة إرسال التوجيهات ================= -->
+
+  <dialog id="directiveDialog">
+
+    <h2>إرسال توجيه للمفتش</h2>
+
+    <form id="directiveForm">
+
+      <input
+        type="hidden"
+        id="directiveInspector"
+      >
+
+      <div class="field">
+        <label for="directiveInspectorName">اسم المفتش</label>
+
+        <input
+          id="directiveInspectorName"
+          type="text"
+          readonly
+        >
+      </div>
+
+      <div class="field">
+        <label for="directiveText">نص التوجيه</label>
+
+        <textarea
+          id="directiveText"
+          rows="5"
+          placeholder="اكتب تفاصيل التوجيه المطلوب تنفيذه..."
+          required
+        ></textarea>
+      </div>
+
+      <div class="field">
+        <label for="directiveDueDate">
+          الموعد النهائي لتنفيذ التوجيه
+        </label>
+
+        <input
+          id="directiveDueDate"
+          type="datetime-local"
+          required
+        >
+      </div>
+
+      <div class="actions">
+        <button type="submit">
+          إرسال التوجيه
+        </button>
+
+        <button
+          type="button"
+          class="secondary"
+          onclick="document.getElementById('directiveDialog').close()"
+        >
+          إلغاء
+        </button>
+      </div>
+
+    </form>
+  </dialog>
+
+  <!-- ================= نافذة إدارة التكليفات ================= -->
+
+  <dialog id="assignmentDialog">
+
+    <h2>إدارة التكليفات</h2>
+
+    <form id="assignmentForm">
+
+      <input
+        type="hidden"
+        id="assignmentZoneId"
+      >
+
+      <div class="field">
+        <label for="assignmentAction">نوع الإجراء</label>
+
+        <select
+          id="assignmentAction"
+          onchange="toggleAssignmentFields()"
+        >
+          <option value="replace">
+            تعيين أو تغيير مفتش بديل
+          </option>
+
+          <option value="extend">
+            تمديد التكليف
+          </option>
+
+          <option value="return">
+            إعادة المفتش الأساسي
+          </option>
+        </select>
+      </div>
+
+      <div id="assignmentFields">
+
+        <div id="replacementField" class="field">
+          <label for="replacementInspector">المفتش البديل</label>
+          <select id="replacementInspector"></select>
+        </div>
+
+        <div class="form-grid">
+
+          <div class="field">
+            <label for="startDate">تاريخ البداية</label>
+            <input id="startDate" type="date">
+          </div>
+
+          <div class="field">
+            <label for="endDate">تاريخ النهاية</label>
+            <input id="endDate" type="date">
+          </div>
+
+        </div>
+
+        <div class="field">
+          <label for="assignmentNotes">الملاحظات</label>
+
+          <textarea
+            id="assignmentNotes"
+            rows="4"
+          ></textarea>
+        </div>
+
+      </div>
+
+      <div class="actions">
+
+        <button type="submit">
+          حفظ واعتماد
+        </button>
+
+        <button
+          type="button"
+          class="secondary"
+          onclick="document.getElementById('assignmentDialog').close()"
+        >
+          إلغاء
+        </button>
+
+      </div>
+
+    </form>
+  </dialog>
+
+</body>
+</html>

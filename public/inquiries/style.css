@@ -1,0 +1,647 @@
+
+/* إعدادات عامة */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    direction: rtl;
+    font-family: "Cairo", Tahoma, sans-serif;
+    font-size: 14px;
+    color: #38443f;
+    background: linear-gradient(135deg, #f8f1f4, #e5f2e8);
+}
+
+/* الصفحة */
+
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+}
+
+/* البطاقة */
+
+.login-card {
+    width: 100%;
+    max-width: 550px;
+    background: #ffffff;
+    border: 1px solid #dfe8e1;
+    border-radius: 28px;
+    padding: 30px 25px;
+    box-shadow: 0 10px 30px rgba(35, 75, 45, 0.10);
+}
+
+/* لوحة الإدارة */
+
+#dashboardPage {
+    max-width: 1050px;
+}
+
+/* الشعار */
+
+.logo {
+    width: 180px;
+    height: auto;
+    margin: 0 auto 20px;
+    background: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+/* العناوين */
+
+.login-card h1 {
+    margin: 10px 0;
+    text-align: center;
+    font-size: 24px;
+    color: #245c3b;
+}
+
+.login-card h2 {
+    margin: 25px 0 15px;
+    text-align: center;
+    font-size: 18px;
+    color: #245c3b;
+}
+
+.subtitle {
+    margin-bottom: 28px;
+    text-align: center;
+    font-size: 13px;
+    color: #84978a;
+}
+
+/* أسماء الحقول */
+
+.clint {
+    display: block;
+    margin: 18px 0 8px;
+    font-weight: bold;
+    color: #405a48;
+}
+
+/* مربعات الإدخال */
+
+.input-box {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background: #f8fbf8;
+    border: 1px solid #d8e5da;
+    border-radius: 12px;
+    padding: 0 12px;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #d8e5da;
+    border-radius: 12px;
+    background: #f8fbf8;
+    font-family: inherit;
+    font-size: 14px;
+    color: #38443f;
+    outline: none;
+}
+
+.input-box input {
+    min-width: 0;
+    border: none;
+    background: transparent;
+    padding: 13px 0;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+.input-box:focus-within {
+    border-color: #5d9b70;
+    box-shadow: 0 0 0 3px rgba(93, 155, 112, 0.12);
+}
+
+/* رقم الهاتف */
+
+.phone-box {
+    display: flex;
+    align-items: center;
+    direction: rtl;
+    gap: 10px;
+}
+
+.phone-box input {
+    flex: 1;
+    direction: rtl;
+}
+
+.country-code {
+    flex-shrink: 0;
+    white-space: nowrap;
+    direction: ltr;
+    color: #245c3b;
+    font-weight: bold;
+    padding-right: 10px;
+    border-right: 1px solid #d8e5da;
+}
+
+/* خانة الاستفسار */
+
+textarea {
+    min-height: 130px;
+    resize: vertical;
+    line-height: 1.8;
+}
+
+/* الأزرار */
+
+button {
+    display: block;
+    width: 100%;
+    margin-top: 22px;
+    padding: 14px;
+    background: #245c3b;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #347c50;
+}
+
+/* الجداول */
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0 25px;
+    background: white;
+}
+
+th,
+td {
+    padding: 13px 12px;
+    border: 1px solid #e0e9e2;
+    text-align: right;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+th {
+    background: #e6f1e8;
+    color: #245c3b;
+    font-weight: bold;
+}
+
+td {
+    background: #fbfdfb;
+}
+
+.customer-table th {
+    width: 35%;
+}
+
+/* جدول الإدارة */
+
+#inquiriesTable {
+    min-width: 700px;
+}
+
+#inquiriesTable thead th {
+    background: #245c3b;
+    color: white;
+}
+
+#inquiriesTable tbody tr:nth-child(even) td {
+    background: #f1f7f2;
+}
+
+/* تم الرد - دائرة خضراء */
+
+.status-replied {
+    color: #21804a;
+    background: #e3f5e9;
+    font-weight: bold;
+    border-radius: 20px;
+    padding: 6px 12px;
+    white-space: nowrap;
+}
+
+.status-replied::before {
+    content: "";
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background: #21804a;
+    border-radius: 50%;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+/* لم يتم الرد - دائرة حمراء مصمتة */
+
+.status-not-replied {
+    color: #bd3030;
+    background: #fde9e9;
+    font-weight: bold;
+    border-radius: 20px;
+    padding: 6px 12px;
+    white-space: nowrap;
+}
+
+.status-not-replied::before {
+    content: "";
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background: #d62828;
+    border-radius: 50%;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+/* تفاصيل الاستفسار */
+
+#inquiryDetails {
+    margin-top: 25px;
+    padding: 20px;
+    background: #f8fbf8;
+    border: 1px solid #dfe8e1;
+    border-radius: 18px;
+}
+
+#inquiryDetails table th {
+    width: 35%;
+}
+
+#inquiryStatus {
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+/* الرسائل */
+
+#message {
+    margin-top: 20px;
+    text-align: center;
+    color: #247344;
+    font-weight: bold;
+}
+
+#emptyMessage {
+    text-align: center;
+    color: #839489;
+    padding: 20px;
+    background: #f8fbf8;
+    border-radius: 12px;
+}
+
+/* الهواتف */
+
+@media (max-width: 768px) {
+
+    .login-page {
+        padding: 15px;
+    }
+
+    .login-card {
+        max-width: 100%;
+        padding: 22px 16px;
+        border-radius: 20px;
+    }
+
+    .logo {
+        width: 150px;
+    }
+
+    .login-card h1 {
+        font-size: 20px;
+    }
+
+    th,
+    td {
+        padding: 10px 8px;
+        font-size: 12px;
+    }
+
+    #inquiryDetails {
+        padding: 12px;
+    }
+}
+
+/* أزرار التنقل بين الصفحات */
+
+.navigation {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 20px;
+    flex-wrap: wrap;
+}
+
+.navigation button {
+    width: auto;
+    min-width: 180px;
+    margin-top: 0;
+}
+
+/* زر عرض التفاصيل */
+
+.details-button {
+    width: auto;
+    margin: 0;
+    padding: 8px 12px;
+    font-size: 12px;
+}
+
+/* الأزرار غير المفعلة */
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ترتيب الصفحة مع أزرار التنقل */
+
+.login-page {
+    min-height: calc(100vh - 90px);
+}
+
+
+/* دخول المدراء */
+
+.admin-box {
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    background: #f8fbf8;
+    border: 1px solid #dfe8e1;
+    border-radius: 14px;
+}
+
+.admin-box h3 {
+    margin: 0 0 10px;
+    font-size: 14px;
+    color: #245c3b;
+}
+
+.admin-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px;
+    align-items: center;
+}
+
+.admin-box button {
+    margin-top: 0;
+    padding: 12px;
+}
+
+#adminLoggedIn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-weight: bold;
+    color: #245c3b;
+}
+
+#adminLoggedIn button {
+    width: auto;
+    min-width: 100px;
+}
+
+/* قائمة الموظفين */
+
+.staff-list {
+    list-style: none;
+    margin: 14px 0 0;
+    padding: 0;
+}
+
+.staff-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    border-top: 1px solid #e0e9e2;
+}
+
+.staff-list li span {
+    direction: ltr;
+    font-weight: bold;
+    color: #38443f;
+}
+
+.staff-list button {
+    width: auto;
+    margin: 0;
+    padding: 6px 14px;
+    font-size: 12px;
+    background: #a83232;
+}
+
+/* نوع الطلب: استفسار (بنفسجي) / شكوى (أحمر) */
+
+.type-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.type-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    border: 2px solid #d8e5da;
+    border-radius: 12px;
+    background: #f8fbf8;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.type-option input {
+    width: auto;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+}
+
+.type-inquiry {
+    color: #6a3fa0;
+}
+
+.type-inquiry:has(input:checked) {
+    border-color: #6a3fa0;
+    background: #f1eafa;
+}
+
+.type-inquiry input {
+    accent-color: #6a3fa0;
+}
+
+.type-complaint {
+    color: #bd3030;
+}
+
+.type-complaint:has(input:checked) {
+    border-color: #bd3030;
+    background: #fde9e9;
+}
+
+.type-complaint input {
+    accent-color: #bd3030;
+}
+
+.type-badge {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 20px;
+    color: #ffffff;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.type-badge-inquiry {
+    background: #6a3fa0;
+}
+
+.type-badge-complaint {
+    background: #c62828;
+}
+
+/* رمز QR ورسائل الوصول */
+
+.access-note {
+    text-align: center;
+    color: #84978a;
+}
+
+.access-blocked {
+    margin-top: 10px;
+    padding: 24px 18px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1.9;
+    color: #6a3fa0;
+    background: #f1eafa;
+    border: 1px solid #d9c8ef;
+    border-radius: 16px;
+}
+
+.qr-box {
+    text-align: center;
+}
+
+.qr-code {
+    display: flex;
+    justify-content: center;
+    padding: 18px;
+    background: #ffffff;
+}
+
+.qr-code img,
+.qr-code canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+.qr-error {
+    text-align: center;
+    color: #bd3030;
+    font-weight: bold;
+}
+
+.kiosk-link {
+    display: block;
+    margin-top: 12px;
+    padding: 12px;
+    text-align: center;
+    border-radius: 12px;
+    background: #6a3fa0;
+    color: #ffffff;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+/* سجل استخدام QR */
+
+.qr-log-table {
+    min-width: 520px;
+    margin-bottom: 0;
+}
+
+/* تنبيه صغير أسفل الشاشة */
+
+.toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    padding: 14px 22px;
+    border-radius: 14px;
+    background: #245c3b;
+    color: #ffffff;
+    font-weight: bold;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.qr-code svg {
+    width: 100%;
+    max-width: 360px;
+    height: auto;
+}
+
+/* سجل QR قابل للطي */
+
+.qr-log-details summary {
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    color: #245c3b;
+}
+
+.clear-log-button {
+    width: auto;
+    margin: 14px 0 0;
+    padding: 8px 16px;
+    font-size: 13px;
+    background: #a83232;
+}
+
+/* اسم كاتب الرد تحت خانة الملاحظات */
+
+.reply-author {
+    margin: 8px 0 0;
+    font-size: 13px;
+    font-weight: bold;
+    color: #6a3fa0;
+}

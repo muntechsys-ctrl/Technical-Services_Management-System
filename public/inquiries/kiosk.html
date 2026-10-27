@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>شاشة الاستقبال</title>
+
+    <link rel="stylesheet" href="style.css?v=8">
+</head>
+
+<body>
+
+    <div class="login-page">
+
+        <div class="login-card" id="kioskPage">
+
+            <div class="logo">
+                <img src="./Dhaid logo.png"
+                     alt="شعار بلدية مدينة الذيد">
+            </div>
+
+            <h1>خدمة المتعاملين</h1>
+
+            <div class="subtitle">
+                إدارة الخدمات الفنية
+            </div>
+
+            <!-- تسجيل دخول موظف لتشغيل الشاشة (يختفي بعد الدخول) -->
+            <div class="admin-box" id="kioskLoginBox" style="display:none;">
+
+                <div id="adminLoginForm">
+
+                    <h3>تسجيل دخول الموظف لتشغيل الشاشة</h3>
+
+                    <div class="admin-fields">
+
+                        <input type="text"
+                               id="adminUsername"
+                               placeholder="اسم المستخدم أو الإيميل"
+                               dir="ltr"
+                               autocomplete="username">
+
+                        <input type="password"
+                               id="adminPassword"
+                               placeholder="كلمة المرور"
+                               autocomplete="current-password">
+
+                        <button type="button" onclick="adminLogin()">
+                            دخول
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div id="adminLoggedIn" style="display:none;">
+
+                    <span id="adminLoggedInText"></span>
+
+                    <button type="button" onclick="adminLogout()">
+                        خروج
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- رمز QR (يتغير تلقائياً كل يوم) -->
+            <div id="qrBox" class="qr-box" style="display:none;">
+
+                <h2>امسح الرمز لتقديم استفسار أو شكوى</h2>
+
+                <div id="qrCode" class="qr-code"></div>
+
+                <p id="qrExpiry" class="access-note"></p>
+
+                <p id="qrError" class="qr-error"></p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js?v=2"></script>
+    <script src="script.js?v=15"></script>
+
+</body>
+</html>

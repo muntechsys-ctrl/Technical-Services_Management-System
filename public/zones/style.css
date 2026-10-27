@@ -1,0 +1,1678 @@
+
+/* =====================================================
+   نظام إدارة نطاقات المفتشين
+   بلدية مدينة الذيد - الإدارة الهندسية
+   ملف التنسيق الرئيسي
+   ===================================================== */
+
+/* ================= الألوان والإعدادات ================= */
+
+:root {
+    --primary: #304b3a;
+    --primary-dark: #243c2d;
+    --primary-light: #eaf1eb;
+
+    --background: #f5f7f5;
+    --surface: #ffffff;
+
+    --text: #30463a;
+    --muted: #68766e;
+
+    --border: #dce5dd;
+    --danger: #a64b46;
+
+    --success: #26723b;
+    --warning: #a46a20;
+
+    --purple: #8250b4;
+    --purple-light: #f5efff;
+
+    --shadow: 0 4px 18px rgba(29, 54, 36, 0.06);
+    --shadow-hover: 0 8px 25px rgba(29, 54, 36, 0.10);
+
+    --radius: 12px;
+}
+
+/* ================= الإعدادات العامة ================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    direction: rtl;
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    background: var(--background);
+    color: var(--text);
+
+    font-family: "Cairo", Tahoma, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    color: var(--primary-dark);
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+    overflow-wrap: anywhere;
+}
+
+p {
+    line-height: 1.9;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    background: var(--primary);
+    color: #ffffff;
+
+    border: 1px solid var(--primary);
+    border-radius: 9px;
+
+    padding: 10px 17px;
+
+    font-weight: 700;
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+button:hover {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid #a8c6af;
+    outline-offset: 2px;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    min-width: 0;
+
+    padding: 12px 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 9px;
+
+    background: #ffffff;
+    color: var(--text);
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #6f9b79;
+    box-shadow: 0 0 0 3px rgba(90, 140, 102, 0.12);
+}
+
+input[readonly] {
+    background: #f4f6f4;
+    color: #59685d;
+    cursor: default;
+}
+
+input[type="checkbox"] {
+    width: auto;
+    min-width: auto;
+    accent-color: var(--primary);
+}
+
+input[type="file"] {
+    padding: 10px;
+}
+
+textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+label {
+    display: block;
+    margin-bottom: 7px;
+
+    font-weight: 700;
+    color: var(--primary);
+}
+
+small {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.hidden,
+[hidden] {
+    display: none !important;
+}
+
+/* ================= الأزرار ================= */
+
+.secondary {
+    background: #ffffff;
+    color: var(--primary);
+    border-color: #b8cbbd;
+}
+
+.secondary:hover {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    border-color: #9db8a4;
+}
+
+.danger {
+    background: var(--danger);
+    color: #ffffff;
+    border-color: var(--danger);
+}
+
+.danger:hover {
+    background: #873a36;
+    border-color: #873a36;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.actions button {
+    min-height: 40px;
+}
+
+/* ================= النماذج ================= */
+
+.field {
+    margin-bottom: 18px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.toolbar input {
+    flex: 1;
+    min-width: 220px;
+}
+
+.toolbar button {
+    white-space: nowrap;
+}
+
+/* ================= بوابة الدخول ================= */
+
+.entry-page {
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 24px;
+    background: #f5f7f5;
+}
+
+.entry-card {
+    width: 100%;
+    max-width: 765px;
+
+    background: #ffffff;
+    border: 2px solid var(--border);
+    border-radius: 23px;
+
+    padding: 40px 50px;
+    text-align: center;
+
+    box-shadow: var(--shadow);
+}
+
+.login-logo {
+    display: block;
+
+    width: 130px;
+    height: 145px;
+
+    object-fit: contain;
+    margin: 0 auto 22px;
+}
+
+.small-logo {
+    width: 90px;
+    height: 105px;
+    margin-bottom: 15px;
+}
+
+.entry-card h1 {
+    font-size: 32px;
+    font-weight: 800;
+    margin: 0 0 14px;
+}
+
+.entry-card h2 {
+    font-size: 25px;
+    margin: 0 0 22px;
+}
+
+.entry-card > p {
+    font-size: 18px;
+    margin: 0 0 18px;
+}
+
+.entry-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 16px;
+    margin-top: 30px;
+}
+
+.entry-buttons button {
+    min-height: 70px;
+    font-size: 20px;
+    border-radius: 12px;
+}
+
+.login-card {
+    max-width: 480px;
+    padding: 30px 38px;
+    text-align: right;
+}
+
+.login-card h2 {
+    text-align: center;
+}
+
+.login-card .actions {
+    margin-top: 20px;
+}
+
+.login-card .actions button {
+    flex: 1;
+}
+
+.login-error {
+    background: #fff0ef;
+    border: 1px solid #edc6c3;
+    color: #a34039;
+
+    padding: 12px;
+    border-radius: 9px;
+    text-align: center;
+}
+
+/* ================= رأس النظام ================= */
+
+.system-header {
+    background: #ffffff;
+    border-bottom: 1px solid var(--border);
+
+    padding: 22px 35px;
+    text-align: center;
+}
+
+.system-header h1 {
+    font-size: 26px;
+    margin: 0 0 5px;
+}
+
+.system-header > p {
+    margin: 0;
+    color: var(--muted);
+}
+
+.user-info {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.user-info span {
+    background: var(--primary-light);
+    color: var(--primary);
+
+    border-radius: 20px;
+    padding: 4px 14px;
+
+    font-weight: 700;
+}
+
+/* ================= قوائم التنقل ================= */
+
+#supervisorNav,
+#inspectorNav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+    padding: 16px 25px;
+
+    background: #ffffff;
+    border-bottom: 1px solid var(--border);
+}
+
+#supervisorNav button,
+#inspectorNav button {
+    font-size: 13px;
+    padding: 10px 15px;
+}
+
+.logout-btn {
+    background: #ffffff;
+    color: var(--danger);
+    border-color: #d9b4b1;
+}
+
+.logout-btn:hover {
+    background: #fff0ef;
+    color: var(--danger);
+    border-color: var(--danger);
+}
+
+.approval-count {
+    display: inline-block;
+
+    min-width: 21px;
+    padding: 0 6px;
+
+    border-radius: 20px;
+    background: #ffffff;
+    color: var(--primary);
+
+    font-size: 12px;
+    margin-right: 5px;
+}
+
+/* ================= محتوى الصفحات ================= */
+
+main {
+    width: min(100%, 1700px);
+    margin: 0 auto;
+    padding: 26px 35px 60px;
+}
+
+.panel {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+
+    padding: 24px;
+    margin-bottom: 22px;
+
+    box-shadow: var(--shadow);
+}
+
+.panel h2 {
+    font-size: 21px;
+    margin: 0 0 18px;
+}
+
+.panel h3 {
+    font-size: 17px;
+    margin: 20px 0 12px;
+}
+
+.panel > p {
+    color: var(--muted);
+}
+
+/* ================= شبكة النطاقات ================= */
+
+#zones.cards,
+#inspectorZones.cards {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    gap: 20px;
+    align-items: stretch;
+}
+
+/* ================= بطاقة النطاق ================= */
+
+.zone-card {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+    min-height: 410px;
+
+    padding: 20px;
+
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--primary);
+    border-radius: 16px;
+
+    box-shadow: var(--shadow);
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.zone-card:hover {
+    border-color: #b9d0be;
+    box-shadow: var(--shadow-hover);
+}
+
+.zone-card-title {
+    margin: 0 0 19px;
+    padding-bottom: 16px;
+
+    border-bottom: 1px solid #e5ebe6;
+
+    color: #284b36;
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.zone-card-info {
+    min-height: 150px;
+    padding-bottom: 8px;
+}
+
+.zone-card-info p {
+    margin: 0 0 16px;
+
+    font-size: 13px;
+    line-height: 2;
+    white-space: pre-line;
+}
+
+.zone-card-info strong {
+    color: #294b37;
+}
+
+.zone-status {
+    background: var(--primary-light);
+    color: #294b37;
+
+    padding: 12px 13px;
+    border-radius: 10px;
+
+    font-weight: 700;
+    font-size: 13px;
+
+    margin-top: auto;
+    margin-bottom: 12px;
+}
+
+.zone-replacement {
+    background: #fff7e9;
+    color: #936020;
+
+    padding: 12px 13px;
+    border-radius: 10px;
+
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.zone-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    margin-top: 18px;
+    padding-top: 17px;
+
+    border-top: 1px solid #e4eae5;
+}
+
+.zone-card-actions button {
+    font-size: 12px;
+    padding: 8px 12px;
+    min-height: 38px;
+}
+
+.zone-edit-btn {
+    background: #ffffff;
+    color: var(--primary);
+    border-color: #b6cbbb;
+}
+
+.zone-edit-btn:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.zone-assignment-btn {
+    background: var(--primary);
+    color: #ffffff;
+}
+
+.zone-delete-btn {
+    background: var(--danger);
+    color: #ffffff;
+    border-color: var(--danger);
+}
+
+.zone-delete-btn:hover {
+    background: #873a36;
+    border-color: #873a36;
+}
+
+/* ================= نطاق المفتش الأساسي ================= */
+
+#inspectorZones .zone-card.my-zone {
+    border: 2px solid #4d9c64;
+    border-top: 4px solid #31824a;
+    background: #f6fbf7;
+}
+
+#inspectorZones .zone-card.my-zone .zone-card-title {
+    color: #206d36;
+}
+
+#inspectorZones .zone-card.my-zone .zone-status {
+    background: #dcefe0;
+    color: #206d36;
+}
+
+/* ================= النطاق الإضافي ================= */
+
+#inspectorZones .zone-card.assigned-zone {
+    background: var(--purple-light);
+
+    border: 2px solid #9361c5;
+    border-top: 4px solid #8250b4;
+
+    box-shadow: 0 4px 16px rgba(112, 62, 165, 0.12);
+}
+
+#inspectorZones .zone-card.assigned-zone .zone-card-title {
+    color: #7543a8;
+}
+
+#inspectorZones .zone-card.assigned-zone .zone-status {
+    background: #e8d9f8;
+    color: #69349d;
+}
+
+.zone-card .acknowledge-btn {
+    display: block;
+    width: 100%;
+
+    margin-top: 15px;
+    padding: 12px;
+
+    background: #8250b4;
+    color: #ffffff;
+
+    border: none;
+    border-radius: 9px;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.zone-card .acknowledge-btn:hover {
+    background: #69349d;
+}
+
+/* ================= لوحة المفتش ================= */
+
+.inspector-welcome {
+    background: var(--primary-light);
+    border: 1px solid #d5e4d7;
+    border-radius: 13px;
+
+    padding: 17px 22px;
+    margin-bottom: 20px;
+
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.inspector-zones-panel {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+/* ================= البطاقات العامة ================= */
+
+.card {
+    min-width: 0;
+
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+
+    padding: 20px;
+    box-shadow: var(--shadow);
+}
+
+.card h3 {
+    margin: 0 0 15px;
+    font-size: 17px;
+}
+
+.card p {
+    margin: 0 0 12px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.card .actions {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 16px;
+    margin-top: 18px;
+}
+
+/* ================= الملاحظات العامة ================= */
+
+/* لوحة جانبية بلون أزرق فسفوري على يسار الصفحة */
+
+.general-notes {
+    --neon: #00b7ff;
+    border: 2px solid var(--neon) !important;
+    background: #f0fbff !important;
+    box-shadow: 0 0 12px rgba(0, 183, 255, 0.55),
+        0 0 28px rgba(0, 183, 255, 0.25) !important;
+    border-radius: 14px;
+}
+
+.general-notes h2 {
+    margin: -6px -6px 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: var(--neon);
+    color: #fff;
+    font-size: 18px;
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+}
+
+.general-notes textarea {
+    width: 100%;
+    margin-bottom: 8px;
+    border-color: var(--neon);
+}
+
+.general-notes button:not(.danger) {
+    background: var(--neon);
+    border-color: var(--neon);
+    color: #fff;
+}
+
+.general-note {
+    border-inline-start: 4px solid var(--neon);
+    background: #fff;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 10px;
+    box-shadow: 0 2px 8px rgba(0, 183, 255, 0.15);
+}
+
+/* الشاشات الكبيرة: عمود جانبي على اليسار يبقى ظاهراً أثناء التمرير */
+@media (min-width: 1100px) {
+    #zonesPage,
+    #inspectorDashboardPage {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        column-gap: 22px;
+        align-items: start;
+    }
+
+    #zonesPage > *,
+    #inspectorDashboardPage > * {
+        grid-column: 1;
+    }
+
+    #zonesPage > .general-notes,
+    #inspectorDashboardPage > .general-notes {
+        grid-column: 2;
+        grid-row: 1 / span 20;
+        position: sticky;
+        top: 16px;
+        max-height: calc(100vh - 32px);
+        overflow-y: auto;
+    }
+}
+
+.general-note-text {
+    white-space: pre-wrap;
+    margin: 0 0 6px;
+    font-size: 15px;
+}
+
+.general-note small {
+    color: var(--muted);
+    display: block;
+    margin-bottom: 6px;
+}
+
+/* ================= مسؤولو النطاقات الميدانية ================= */
+
+.field-supervisors {
+    margin-top: 18px;
+}
+
+.field-supervisors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+}
+
+.field-supervisor-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    background: var(--surface);
+}
+
+.field-supervisor-card.active {
+    border-color: #d4a017;
+    box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.25);
+}
+
+.field-supervisor-toggle {
+    width: 100%;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.field-supervisor-card.active .field-supervisor-toggle {
+    background: #d4a017;
+    color: #fff;
+}
+
+.add-field-supervisor {
+    min-height: 120px;
+    border: 2px dashed var(--border);
+    font-size: 16px;
+}
+
+.zone-highlight {
+    border: 2px solid #d4a017 !important;
+    box-shadow: 0 0 0 4px rgba(212, 160, 23, 0.25), var(--shadow-hover);
+    background: #fffbea;
+}
+
+.field-supervisor-tag {
+    color: #9a7410;
+    font-weight: 700;
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+.inspector-field-supervisor {
+    border: 2px solid #d4a017;
+    background: #fffbea;
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 0 0 4px rgba(212, 160, 23, 0.2);
+}
+
+.inspector-field-supervisor h3 {
+    color: #9a7410;
+    margin-top: 0;
+}
+
+.zone-dimmed {
+    opacity: 0.4;
+}
+
+.zone-checkboxes {
+    display: grid;
+    gap: 6px;
+    max-height: 220px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.zone-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: normal;
+}
+
+#fieldSupervisorDialog {
+    width: min(94vw, 600px);
+}
+
+/* ================= المعاملات المنجزة ================= */
+
+.table-scroll {
+    overflow-x: auto;
+}
+
+.transactions-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+.transactions-table th,
+.transactions-table td {
+    border: 1px solid var(--border);
+    padding: 8px;
+    text-align: right;
+    vertical-align: top;
+}
+
+.transactions-table th {
+    background: var(--primary-light);
+}
+
+.transactions-table th:first-child,
+.transactions-table td:first-child {
+    width: 45px;
+    text-align: center;
+}
+
+.transactions-table td:last-child {
+    width: 80px;
+}
+
+.transactions-table textarea {
+    width: 100%;
+    min-height: 60px;
+    resize: vertical;
+}
+
+.transactions-list {
+    margin: 6px 0 12px;
+    padding-inline-start: 22px;
+    white-space: pre-wrap;
+}
+
+/* ================= التوجيهات ================= */
+
+.directive-notification {
+    display: inline-block;
+
+    color: #2563eb;
+    font-size: 20px;
+    font-weight: 900;
+
+    margin: 5px 0;
+}
+
+.directive-admin-notice {
+    background: #eff6ff;
+    color: #2563eb;
+
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+
+    padding: 9px 12px;
+    font-weight: 700;
+}
+
+#directiveDialog {
+    width: min(94vw, 650px);
+}
+
+#directiveDialog textarea {
+    min-height: 150px;
+}
+
+#inspectorDirectivesDialog {
+    width: min(95vw, 750px);
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+#inspectorDirectivesDialog .card {
+    margin-bottom: 15px;
+}
+
+#inspectorDirectivesDialog .actions {
+    gap: 7px;
+}
+
+#inspectorDirectivesDialog .actions button {
+    font-size: 12px;
+    padding: 7px 11px;
+}
+
+.directive-status {
+    display: inline-block;
+
+    padding: 5px 12px;
+    border-radius: 20px;
+
+    background: var(--primary-light);
+    color: var(--primary);
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.directive-overdue {
+    background: #fff0ef;
+    color: #a34039;
+
+    border: 1px solid #edc6c3;
+    border-radius: 9px;
+
+    padding: 10px 13px;
+    font-weight: 700;
+}
+
+/* ================= التقارير الأسبوعية ================= */
+
+.report-week-heading {
+    background: var(--primary-light);
+    border-radius: 11px;
+
+    padding: 15px 18px;
+    margin-bottom: 20px;
+}
+
+.report-week-heading h3 {
+    margin: 0 0 5px;
+}
+
+.report-week-heading p {
+    margin: 0;
+    font-weight: 700;
+}
+
+#weeklyReportForm {
+    max-width: 900px;
+}
+
+#weeklyReportForm textarea {
+    min-height: 120px;
+}
+
+#weeklyReportForm label small {
+    margin-right: 8px;
+    font-weight: 400;
+}
+
+#weeklyReportForm input[type="number"] {
+    text-align: center;
+    font-weight: 700;
+}
+
+.weekly-draft-status {
+    color: #52725d;
+    font-size: 13px;
+
+    margin: 12px 0;
+    padding: 10px 13px;
+
+    background: #f5f9f5;
+    border: 1px solid #e0ebe2;
+    border-radius: 8px;
+}
+
+#saveWeeklyDraftButton {
+    background: #e8f1ea;
+    color: #285a3a;
+    border: 1px solid #a7c5ae;
+}
+
+#saveWeeklyDraftButton:hover {
+    background: #d8e9dc;
+    color: #214c30;
+}
+
+/* ================= التقارير غير المرسلة ================= */
+
+.missing-reports-section {
+    background: #fafbf9;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+
+    padding: 18px;
+    margin-bottom: 25px;
+}
+
+.week-range {
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.name-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+}
+
+.name-list p {
+    background: #fff7e9;
+    border: 1px solid #f0e1c5;
+    border-radius: 9px;
+
+    padding: 8px 14px;
+    margin: 0;
+}
+
+/* ================= تذكيرات الإدارة ================= */
+
+.reminder-box {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+
+    padding: 22px;
+    margin-bottom: 28px;
+}
+
+.reminder-box h3 {
+    margin: 0 0 12px;
+}
+
+.reminder-box > p {
+    color: var(--muted);
+}
+
+#reminderInspectors {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+    gap: 12px;
+    margin: 15px 0 25px;
+}
+
+#reminderInspectors .reminder-inspector {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+
+    gap: 8px;
+    width: auto;
+
+    margin: 0;
+    padding: 10px 16px;
+
+    background: #f3f4f3;
+    border: 1px solid #d9dfda;
+    border-radius: 10px;
+
+    color: #405347;
+    cursor: pointer;
+    user-select: none;
+
+    position: relative;
+    transition: 0.2s;
+}
+
+#reminderInspectors .reminder-inspector:hover {
+    background: #eaf1eb;
+    border-color: #a7c3ae;
+}
+
+#reminderInspectors .reminder-inspector input[type="checkbox"] {
+    position: absolute;
+
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+
+    padding: 0;
+    margin: 0;
+}
+
+#reminderInspectors .reminder-inspector:has(input:checked) {
+    background: #dceee0;
+    border-color: #39784b;
+    color: #245533;
+
+    font-weight: 800;
+}
+
+#reminderInspectors .reminder-inspector:has(input:checked)::before {
+    content: "✓";
+    color: #26723b;
+
+    font-size: 17px;
+    font-weight: 900;
+}
+
+#reminderInspectors .reminder-inspector:focus-within {
+    outline: 2px solid #39784b;
+    outline-offset: 3px;
+}
+
+#reminderNote {
+    min-height: 120px;
+}
+
+.success-message {
+    margin-top: 15px;
+    padding: 12px 15px;
+
+    background: #eaf6ec;
+    color: #27643a;
+
+    border: 1px solid #bddbc5;
+    border-radius: 9px;
+
+    font-weight: 700;
+}
+
+/* ================= تذكيرات المفتش ================= */
+
+.inspector-reminder {
+    background: #fff7e9;
+    border: 1px solid #edd8ad;
+    border-right: 4px solid #c48a35;
+    border-radius: 11px;
+
+    padding: 18px 20px;
+    margin-bottom: 20px;
+
+    color: #80571e;
+}
+
+.inspector-reminder strong {
+    font-size: 16px;
+}
+
+.inspector-reminder p {
+    margin: 10px 0 0;
+
+    line-height: 1.9;
+    white-space: pre-wrap;
+}
+
+/* ================= تنبيهات التكليف ================= */
+
+#alerts:not(:empty) {
+    margin-bottom: 18px;
+}
+
+#alerts p {
+    background: #fff7e9;
+    color: #8a5d23;
+
+    border: 1px solid #f1dfb9;
+    border-radius: 9px;
+
+    padding: 11px 15px;
+    margin: 0 0 8px;
+
+    font-weight: 700;
+}
+
+/* ================= سجل التغييرات ================= */
+
+.table-wrap {
+    overflow-x: auto;
+
+    border: 1px solid var(--border);
+    border-radius: 11px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+
+    text-align: right;
+    background: #ffffff;
+}
+
+thead {
+    background: var(--primary-light);
+}
+
+th,
+td {
+    padding: 13px 14px;
+
+    border-bottom: 1px solid #e7ece8;
+    vertical-align: top;
+
+    font-size: 13px;
+}
+
+th {
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+tbody tr:hover {
+    background: #f8faf8;
+}
+
+td button {
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+/* ================= تعليمات التفتيش ================= */
+
+.inspection-rules {
+    margin-top: 26px;
+    padding: 23px 26px;
+
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+
+    box-shadow: var(--shadow);
+}
+
+.inspection-rules h2 {
+    margin: 0 0 14px;
+}
+
+.inspection-rules ol {
+    padding-right: 24px;
+    margin: 0;
+}
+
+.inspection-rules li {
+    padding: 5px 0;
+}
+
+/* ================= إدارة المستخدمين ================= */
+
+#userForm {
+    max-width: 900px;
+}
+
+#usersList .card {
+    position: relative;
+}
+
+#usersList .card h3 {
+    color: var(--primary-dark);
+}
+
+#usersList .actions {
+    margin-top: 18px;
+}
+
+/* ================= النسخ الاحتياطي ================= */
+
+#backupImportFile {
+    background: #fafcfb;
+    border: 1px dashed #a8bcae;
+
+    padding: 15px;
+    cursor: pointer;
+}
+
+#backupImportFile:hover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+#backupImportFile::file-selector-button {
+    background: var(--primary);
+    color: #ffffff;
+
+    border: none;
+    border-radius: 7px;
+
+    padding: 8px 14px;
+    margin-left: 12px;
+
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* ================= النوافذ المنبثقة ================= */
+
+dialog {
+    width: min(94vw, 560px);
+    max-height: 90vh;
+    overflow-y: auto;
+
+    padding: 27px;
+
+    border: 1px solid var(--border);
+    border-radius: 17px;
+
+    background: #ffffff;
+    color: var(--text);
+
+    box-shadow: 0 15px 60px rgba(0, 0, 0, 0.16);
+    direction: rtl;
+}
+
+dialog::backdrop {
+    background: rgba(18, 35, 25, 0.4);
+}
+
+dialog h2 {
+    margin: 0 0 22px;
+}
+
+dialog .actions {
+    margin-top: 24px;
+    padding-top: 17px;
+    border-top: 1px solid var(--border);
+}
+
+dialog textarea {
+    min-height: 120px;
+}
+
+dialog button {
+    min-width: 90px;
+}
+
+/* ================= شاشات متوسطة ================= */
+
+@media (max-width: 1350px) {
+
+    #zones.cards,
+    #inspectorZones.cards {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+}
+
+/* ================= الأجهزة اللوحية ================= */
+
+@media (max-width: 1000px) {
+
+    main {
+        padding: 22px 20px 45px;
+    }
+
+    #zones.cards,
+    #inspectorZones.cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .system-header {
+        padding: 20px;
+    }
+
+}
+
+/* ================= الهواتف ================= */
+
+@media (max-width: 650px) {
+
+    body {
+        font-size: 13px;
+    }
+
+    .entry-page {
+        padding: 15px;
+    }
+
+    .entry-card {
+        padding: 30px 19px;
+    }
+
+    .login-logo {
+        width: 105px;
+        height: 115px;
+    }
+
+    .small-logo {
+        width: 80px;
+        height: 90px;
+    }
+
+    .entry-card h1 {
+        font-size: 24px;
+    }
+
+    .entry-card > p {
+        font-size: 16px;
+    }
+
+    .entry-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .entry-buttons button {
+        min-height: 58px;
+        font-size: 18px;
+    }
+
+    .login-card {
+        padding: 25px 18px;
+    }
+
+    .system-header {
+        padding: 20px 15px;
+    }
+
+    .system-header h1 {
+        font-size: 21px;
+    }
+
+    #supervisorNav,
+    #inspectorNav {
+        padding: 12px;
+        gap: 7px;
+    }
+
+    #supervisorNav button,
+    #inspectorNav button {
+        flex: 1 1 auto;
+
+        font-size: 12px;
+        padding: 9px 10px;
+    }
+
+    main {
+        padding: 16px 12px 35px;
+    }
+
+    .panel {
+        padding: 17px;
+    }
+
+    .panel h2 {
+        font-size: 19px;
+    }
+
+    .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .toolbar input,
+    .toolbar button {
+        width: 100%;
+    }
+
+    #zones.cards,
+    #inspectorZones.cards {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .zone-card {
+        min-height: 0;
+        padding: 18px;
+    }
+
+    .zone-card-info {
+        min-height: 0;
+        margin-bottom: 20px;
+    }
+
+    .zone-card-actions button {
+        flex: 1;
+
+        font-size: 11px;
+        padding: 9px 7px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .card-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .reminder-box {
+        padding: 15px;
+    }
+
+    .inspector-welcome {
+        font-size: 17px;
+        padding: 14px;
+    }
+
+    #weeklyReportForm .actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #weeklyReportForm .actions button {
+        width: 100%;
+    }
+
+    dialog {
+        padding: 20px;
+        width: min(95vw, 560px);
+    }
+
+    dialog .actions button {
+        flex: 1;
+    }
+
+    th,
+    td {
+        padding: 10px;
+        font-size: 12px;
+    }
+
+}
+
+/* ================= الطباعة ================= */
+
+@media print {
+
+    body {
+        background: #ffffff;
+        color: #000000;
+    }
+
+    #supervisorNav,
+    #inspectorNav,
+    .toolbar,
+    .zone-card-actions,
+    .actions,
+    .entry-page,
+    .logout-btn {
+        display: none !important;
+    }
+
+    .panel,
+    .zone-card,
+    .card {
+        box-shadow: none;
+        break-inside: avoid;
+    }
+
+    main {
+        width: 100%;
+        padding: 0;
+    }
+
+    .zone-card {
+        min-height: 0;
+    }
+
+    #zones.cards,
+    #inspectorZones.cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+/* تنسيق سجل التغييرات كسطور متتالية */
+
+#historyList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#historyList .card {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 18px;
+    margin: 0;
+    border-radius: 10px;
+}
+
+#historyList .card .actions {
+    margin-top: 8px;
+}

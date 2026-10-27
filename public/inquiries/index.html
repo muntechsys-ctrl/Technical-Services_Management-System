@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>خدمة المتعاملين</title>
+
+    <link rel="stylesheet" href="style.css?v=8">
+</head>
+
+<body>
+
+    <div class="login-page">
+
+        <div class="login-card" id="customerPage">
+
+            <!-- شعار حكومة الشارقة -->
+          <div class="logo">
+              <img src="./Dhaid logo.png"
+         alt="شعار بلدية مدينة الذيد">
+         </div>
+
+            <h1>خدمة المتعاملين</h1>
+
+            <div class="subtitle">
+                إدارة الخدمات الفنية||استفسارك يهمنا
+            </div>
+
+            <!-- التحقق من رمز QR -->
+            <p id="accessChecking" class="access-note">
+                جاري التحقق...
+            </p>
+
+            <!-- تظهر إذا فُتحت الصفحة بدون رمز QR صالح من الإدارة -->
+            <div id="accessBlocked" class="access-blocked" style="display:none;">
+                <p id="accessBlockedText"></p>
+            </div>
+
+            <!-- المرحلة الأولى: بيانات المتعامل -->
+            <div id="step1" style="display:none;">
+
+                <label class="clint" for="customerName">
+                    اسم المتعامل
+                </label>
+
+                <div class="input-box">
+                    <input
+                        type="text"
+                        id="customerName"
+                        placeholder="اكتب اسمك الثلاثي"
+                        autocomplete="name">
+                </div>
+
+                <label class="clint" for="customerPhone">
+                    رقم الهاتف
+                </label>
+
+                <div class="input-box phone-box">
+
+                    <input
+                        type="tel"
+                        id="customerPhone"
+                        placeholder="رقم الهاتف"
+                        autocomplete="tel">
+
+                    <span class="country-code" dir="ltr">
+                        +971
+                    </span>
+
+                </div>
+
+                <button type="button" onclick="nextStep()">
+                    التالي
+                </button>
+
+            </div>
+
+            <!-- المرحلة الثانية: تسجيل الاستفسار -->
+            <div id="step2" style="display:none;">
+
+                <h2>بيانات المتعامل</h2>
+
+                <table class="customer-table">
+
+                    <tr>
+                        <th>اسم المتعامل</th>
+                        <td id="showName"></td>
+                    </tr>
+
+                    <tr>
+                        <th>رقم الهاتف</th>
+                        <td id="showPhone"></td>
+                    </tr>
+
+                    <tr>
+                        <th>اليوم</th>
+                        <td id="showDay"></td>
+                    </tr>
+
+                    <tr>
+                        <th>التاريخ</th>
+                        <td id="showDate"></td>
+                    </tr>
+
+                    <tr>
+                        <th>الساعة</th>
+                        <td id="showTime"></td>
+                    </tr>
+
+                </table>
+
+                <h2>تفاصيل الاستفسار</h2>
+
+                <!-- نوع الطلب: استفسار أو شكوى -->
+                <span class="clint">نوع الطلب</span>
+
+                <div class="type-options">
+
+                    <label class="type-option type-inquiry">
+                        <input
+                            type="radio"
+                            name="requestType"
+                            value="استفسار"
+                            checked
+                            onchange="updateRequestTypeLabels()">
+                        استفسار
+                    </label>
+
+                    <label class="type-option type-complaint">
+                        <input
+                            type="radio"
+                            name="requestType"
+                            value="شكوى"
+                            onchange="updateRequestTypeLabels()">
+                        شكوى
+                    </label>
+
+                </div>
+
+                <label class="clint" for="employeeName">
+                    اسم الموظف الذي تم الاستفسار منه
+                </label>
+
+                <input
+                    type="text"
+                    id="employeeName"
+                    placeholder="اكتب اسم الموظف">
+
+                <label class="clint" for="inquiry" id="inquiryLabel">
+                    الاستفسار
+                </label>
+
+                <textarea
+                    id="inquiry"
+                    rows="5"
+                    placeholder="اكتب استفسارك هنا"></textarea>
+
+                <button type="button" onclick="sendInquiry()">
+                    إرسال الاستفسار
+                </button>
+
+                <p id="message" role="status"></p>
+
+                <button
+                    type="button"
+                    id="newInquiryButton"
+                    onclick="showCustomerPage()"
+                    style="display:none;">
+                    تسجيل استفسار جديد
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js?v=2"></script>
+    <script src="script.js?v=15"></script>
+
+</body>
+</html>

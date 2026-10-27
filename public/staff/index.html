@@ -1,0 +1,459 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>نظام إدارة شؤون الموظفين</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="stylesheet" href="style.css?v=20261025033154">
+</head>
+<body>
+
+<section id="loadingPage" class="auth-page">
+  <div class="auth-card">
+    <img class="brand-logo" src="logo.png" alt="شعار بلدية مدينة الذيد">
+    <h1>نظام إدارة شؤون الموظفين</h1>
+    <p id="loadingText">جاري الاتصال بقاعدة البيانات...</p>
+  </div>
+</section>
+
+<section id="setupPage" class="auth-page hidden">
+  <div class="auth-card">
+    <img class="brand-logo" src="logo.png" alt="شعار بلدية مدينة الذيد">
+    <h1>تهيئة النظام</h1>
+    <p>إنشاء حساب مديرة النظام لأول مرة</p>
+    <form id="setupForm">
+      <label>الاسم الثلاثي</label>
+      <input id="setupName" required>
+      <label>كلمة المرور</label>
+      <input id="setupPassword" type="password" required>
+      <label>تأكيد كلمة المرور</label>
+      <input id="setupConfirm" type="password" required>
+      <label id="importLocalRow" class="check-row hidden">
+        <input id="importLocal" type="checkbox" checked>
+        <span id="importLocalText"></span>
+      </label>
+      <p id="setupError" class="error"></p>
+      <button class="btn primary" type="submit">إنشاء الحساب</button>
+    </form>
+  </div>
+</section>
+
+<section id="loginPage" class="auth-page hidden">
+  <div class="auth-card">
+    <img class="brand-logo" src="logo.png" alt="شعار بلدية مدينة الذيد">
+    <h1>نظام إدارة شؤون الموظفين</h1>
+    <p>تسجيل الدخول</p>
+    <!-- الدخول يتم من الصفحة الرئيسية بنفس الحساب -->
+    <p id="loginError" class="error"></p>
+    <p class="meta">سجّل الدخول من الصفحة الرئيسية لنظام إدارة الخدمات الفنية، ثم افتح منصة شؤون الموظفين.</p>
+    <a class="btn primary" href="../" target="_top">الذهاب للصفحة الرئيسية</a>
+    <form id="loginForm" class="hidden">
+      <label>الاسم الثلاثي</label>
+      <input id="loginName" autocomplete="username" required>
+      <label>كلمة المرور</label>
+      <input id="loginPassword" type="password"
+             autocomplete="current-password" required>
+      <button class="btn primary" type="submit">دخول</button>
+    </form>
+  </div>
+</section>
+
+<div id="appPage" class="app hidden">
+
+  <aside class="sidebar">
+    <div class="side-brand">
+      <img class="brand-logo" src="logo.png" alt="شعار بلدية مدينة الذيد">
+      <h2>شؤون الموظفين</h2>
+      <small>النظام الإداري الداخلي</small>
+    </div>
+
+    <nav id="navMenu">
+      <button data-tab="dashboard" class="nav-btn active">⌂ الرئيسية</button>
+      <button data-tab="leaves" class="nav-btn">☀ الإجازات</button>
+      <button data-tab="newRequest" class="nav-btn">＋ طلب دورة</button>
+      <button data-tab="myRequests" class="nav-btn">▤ دوراتي</button>
+      <button data-tab="approvals" class="nav-btn">✓ اعتمادات الدورات</button>
+      <button data-tab="coverTasks" class="nav-btn">▣ مهام البديل</button>
+      <button data-tab="inquiries" class="nav-btn">☏ الاستفسارات والطلبات</button>
+      <button data-tab="assignments" class="nav-btn">◈ التكليفات</button>
+      <button data-tab="instructions" class="nav-btn">☷ تعليمات الفريق</button>
+      <button data-tab="notes" class="nav-btn">✎ ملاحظاتي الخاصة</button>
+      <button data-tab="orgChart" class="nav-btn">☊ الهيكل التنظيمي</button>
+      <button data-tab="admin" class="nav-btn">⚙ إدارة النظام</button>
+    </nav>
+
+    <!-- كلمات المرور تُدار من الصفحة الرئيسية -->
+    <button id="changePasswordBtn" class="btn outline logout hidden">تغيير كلمة المرور</button>
+    <button id="logoutBtn" class="btn outline">تسجيل الخروج</button>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <h1 id="pageTitle">الرئيسية</h1>
+        <p id="pageSubtitle">مرحباً بك في النظام</p>
+      </div>
+      <div id="currentUserInfo" class="user-chip"></div>
+    </header>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <section id="dashboardTab" class="tab">
+      <div id="stats" class="stats-grid"></div>
+      <div id="dashboardContent"></div>
+    </section>
+
+    <section id="leavesTab" class="tab hidden">
+      <div class="panel narrow">
+        <h2>بياناتي الوظيفية</h2>
+        <form id="profileForm">
+          <div class="form-grid">
+            <div>
+              <label>تاريخ التعيين (اختياري)</label>
+              <input id="profileHireDate" class="date-text" inputmode="numeric" dir="ltr" placeholder="dd/mm" maxlength="5">
+            </div>
+            <div>
+              <label>رصيد الإجازات السنوية الحالي (أيام عمل)</label>
+              <input id="profileBalance" type="number" min="0" step="0.5">
+            </div>
+          </div>
+          <div id="profileSummary" class="profile-summary"></div>
+          <button class="btn primary" type="submit">حفظ بياناتي</button>
+        </form>
+      </div>
+
+      <div class="panel narrow">
+        <h2>حاسبة وطلب الإجازة</h2>
+        <form id="leaveForm">
+          <label>نوع الإجازة</label>
+          <select id="leaveType"></select>
+
+          <div class="form-grid">
+            <div>
+              <label>من تاريخ</label>
+              <input id="leaveStart" type="date" required>
+            </div>
+            <div>
+              <label>إلى تاريخ</label>
+              <input id="leaveEnd" type="date" required>
+            </div>
+          </div>
+
+          <label>إرسال الطلب إلى</label>
+          <select id="leaveManager"></select>
+          <label id="leaveCoRow" class="check-row hidden">
+            <input id="leaveCoCheck" type="checkbox">
+            <span id="leaveCoText"></span>
+          </label>
+
+          <label>الموظف البديل</label>
+          <select id="leaveCover"></select>
+
+          <div id="leaveCalc" class="leave-calc"></div>
+
+          <div class="section-head">
+            <h3>المهام المعلّقة أو التي تحتاج استكمال</h3>
+            <button type="button" id="addLeaveTaskBtn" class="btn outline small">
+              + إضافة مهمة
+            </button>
+          </div>
+          <div id="leaveTasks"></div>
+
+          <label>ملاحظات إضافية (اختياري)</label>
+          <textarea id="leaveNotes" rows="3"></textarea>
+
+          <button class="btn primary" type="submit">إرسال طلب الإجازة</button>
+        </form>
+      </div>
+
+      <h2>إجازاتي</h2>
+      <div id="myLeavesList" class="cards"></div>
+
+      <div id="leaveApprovalsBlock">
+        <h2>طلبات الإجازة الواردة للاعتماد</h2>
+        <div id="leaveApprovalsList" class="cards"></div>
+      </div>
+
+      <h2>إجازات أنا البديل فيها</h2>
+      <div id="leaveCoverList" class="cards"></div>
+
+      <h2>جدول إجازات القسم القادمة</h2>
+      <div id="departmentLeavesList" class="cards"></div>
+    </section>
+
+    <section id="newRequestTab" class="tab hidden">
+      <div class="panel narrow">
+        <h2>طلب دورة تدريبية جديدة</h2>
+        <form id="requestForm">
+          <label>اسم الدورة</label>
+          <input id="courseName" required>
+
+          <div class="form-grid">
+            <div>
+              <label>من تاريخ</label>
+              <input id="courseStart" type="date" required>
+            </div>
+            <div>
+              <label>إلى تاريخ</label>
+              <input id="courseEnd" type="date" required>
+            </div>
+          </div>
+
+          <label>عدد الأيام</label>
+          <input id="courseDays" readonly>
+
+          <label>إرسال الطلب إلى</label>
+          <select id="requestManager"></select>
+
+          <label>الموظف البديل المقترح</label>
+          <select id="proposedCover"></select>
+
+          <div class="section-head">
+            <h3>المهام أثناء الغياب</h3>
+            <button type="button" id="addTaskBtn" class="btn outline small">
+              + إضافة مهمة
+            </button>
+          </div>
+          <div id="requestTasks"></div>
+
+          <label>ملاحظات إضافية (اختياري)</label>
+          <textarea id="employeeNotes" rows="3"></textarea>
+
+          <button class="btn primary" type="submit">إرسال طلب الدورة</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="myRequestsTab" class="tab hidden">
+      <h2>طلبات دوراتي التدريبية</h2>
+      <div id="myRequestsList" class="cards"></div>
+    </section>
+
+    <section id="approvalsTab" class="tab hidden">
+
+  <div class="section-head">
+    <h2>طلبات الدورات الواردة</h2>
+  </div>
+
+  <div class="panel">
+    <h3>الطلبات بانتظار الإجراء</h3>
+    <p class="muted">
+      يمكنك اعتماد الطلب أو رفضه،
+      كما يمكن لرئيس الشعبة تحويل الطلب إلى رئيس القسم المختص.
+    </p>
+
+    <div id="approvalsList" class="cards"></div>
+  </div>
+
+  <div class="panel">
+    <h3>الطلبات المحوّلة</h3>
+    <div id="forwardedRequestsList" class="cards"></div>
+  </div>
+
+</section>
+
+    <section id="coverTasksTab" class="tab hidden">
+      <h2>مهامي كموظف بديل</h2>
+      <div id="coverTasksList" class="cards"></div>
+    </section>
+
+    <section id="inquiriesTab" class="tab hidden">
+      <div class="panel">
+        <h2>استفسار أو طلب جديد</h2>
+        <form id="inquiryForm">
+          <label>نوع المعاملة</label>
+          <select id="inquiryType">
+            <option value="inquiry">استفسار</option>
+            <option value="request">طلب</option>
+          </select>
+          <label>الموضوع</label>
+          <input id="inquirySubject" required>
+          <label>التفاصيل</label>
+          <textarea id="inquiryBody" rows="4" required></textarea>
+          <label>إرسال إلى</label>
+          <select id="inquiryManager"></select>
+          <button class="btn primary" type="submit">إرسال</button>
+        </form>
+      </div>
+
+      <h2>معاملاتي المرسلة</h2>
+      <div id="myInquiries" class="cards"></div>
+
+      <h2 id="inboxTitle">الوارد من الفريق</h2>
+      <div id="inquiryInbox" class="cards"></div>
+    </section>
+
+    <section id="assignmentsTab" class="tab hidden">
+      <div id="assignmentCreatePanel" class="panel">
+        <h2>إرسال تكليف للموظفين</h2>
+        <form id="assignmentForm">
+          <label>عنوان التكليف</label>
+          <input id="assignmentTitle" required>
+
+          <label>تفاصيل التكليف</label>
+          <textarea id="assignmentBody" rows="3" required></textarea>
+
+          <label>الموظفون المستلمون</label>
+          <div id="assignmentRecipients" class="check-list"></div>
+
+          <label>موعد الإنجاز (اختياري)</label>
+          <input id="assignmentDue" type="date">
+
+          <button class="btn primary" type="submit">إرسال التكليف</button>
+        </form>
+      </div>
+
+      <h2>التكليفات الواردة إليّ</h2>
+      <div id="receivedAssignments" class="cards"></div>
+
+      <h2 id="sentAssignmentsTitle">التكليفات التي أرسلتها</h2>
+      <div id="sentAssignments" class="cards"></div>
+    </section>
+
+    <section id="instructionsTab" class="tab hidden">
+      <div id="instructionCreatePanel" class="panel">
+        <h2>إضافة تعليمات للفريق</h2>
+        <form id="instructionForm">
+          <label>عنوان التعليمات (اختياري)</label>
+          <input id="instructionTitle">
+          <label>نص التعليمات</label>
+          <textarea id="instructionBody" rows="4" required></textarea>
+          <button class="btn primary" type="submit">نشر التعليمات</button>
+        </form>
+      </div>
+      <h2>تعليمات المسؤول</h2>
+      <div id="instructionsList" class="cards"></div>
+    </section>
+
+    <section id="notesTab" class="tab hidden">
+      <div class="panel">
+        <h2>ملاحظاتي الخاصة 🔒</h2>
+        <form id="noteForm">
+          <input type="hidden" id="editingNoteId">
+          <label>عنوان الملاحظة (اختياري)</label>
+          <input id="noteTitle">
+          <label>الملاحظة</label>
+          <textarea id="noteBody" rows="5" required></textarea>
+          <button class="btn primary" type="submit">حفظ الملاحظة</button>
+          <button class="btn outline" type="button" id="cancelNoteEdit">
+            إلغاء التعديل
+          </button>
+        </form>
+      </div>
+      <div id="notesList" class="cards"></div>
+    </section>
+
+    <section id="orgChartTab" class="tab hidden">
+      <div class="section-head">
+        <p class="meta">اضغط على أي اسم لعرض بيانات التواصل. بطاقتك ملوّنة بالبني الرملي.</p>
+        <button type="button" class="btn outline" data-action="edit-my-contact">✎ تعديل بيانات التواصل الخاصة بي</button>
+      </div>
+      <div id="publicOrgChart" class="org-chart"></div>
+    </section>
+
+    <section id="adminTab" class="tab hidden">
+      <div class="section-head">
+        <h2>إدارة النظام</h2>
+        <div class="actions">
+          <button id="importBackupBtn" class="btn outline">
+            استيراد نسخة احتياطية
+          </button>
+          <button id="exportBackupBtn" class="btn outline">
+            تصدير نسخة احتياطية
+          </button>
+        </div>
+        <input id="importBackupFile" type="file" accept=".json,application/json" hidden>
+      </div>
+
+      <div class="admin-grid">
+        <div class="panel">
+          <h3>إضافة قسم</h3>
+          <form id="departmentForm">
+            <label>اسم القسم</label>
+            <input id="departmentName" required>
+            <button class="btn primary" type="submit">إضافة القسم</button>
+          </form>
+          <div id="departmentsList"></div>
+        </div>
+
+        <div class="panel">
+          <h3>إضافة شعبة أو مكتب</h3>
+          <form id="unitForm">
+            <label>القسم أو الإدارة التابع لها</label>
+            <select id="unitDepartment" required></select>
+            <label>الاسم</label>
+            <input id="unitName" required placeholder="مثال: شعبة التفتيش أو مكتب الشؤون القانونية">
+            <label>المسؤول (اختياري)</label>
+            <select id="unitManager"></select>
+            <div class="actions">
+              <button class="btn primary" type="submit" value="unit">＋ إضافة شعبة</button>
+              <button class="btn warning" type="submit" value="office">＋ إضافة مكتب</button>
+            </div>
+          </form>
+          <div id="unitsList"></div>
+        </div>
+
+        <div class="panel">
+          <h3>إضافة مستخدم</h3>
+          <p class="meta">
+            الموظفون يُضافون من الصفحة الرئيسية (المستخدمون والصلاحيات)،
+            ويظهرون هنا تلقائياً بأقسامهم وشعبهم ومناصبهم.
+          </p>
+          <a class="btn primary" href="../" target="_top">فتح الصفحة الرئيسية</a>
+          <form id="employeeForm" class="hidden">
+            <label>الاسم الثلاثي</label>
+            <input id="employeeName" required>
+            <label>القسم</label>
+            <select id="employeeDepartment"></select>
+            <label>الشعبة أو المكتب</label>
+            <select id="employeeUnit"></select>
+            <label>الصلاحية</label>
+            <select id="employeeRole">
+              <option value="employee">موظف</option>
+              <option value="manager">مسؤول</option>
+              <option value="admin">مديرة النظام</option>
+            </select>
+            <label>كلمة المرور</label>
+            <input id="employeePassword" required>
+            <button class="btn primary" type="submit">إضافة المستخدم</button>
+          </form>
+        </div>
+
+        <div class="panel">
+          <h3>تعيين المسؤولين</h3>
+          <div id="managerAssignments"></div>
+        </div>
+      </div>
+
+      <h2>الهيكل التنظيمي</h2>
+      <p class="meta">اضغطي على أي اسم لتعديل بياناته.</p>
+      <div id="usersList" class="org-chart"></div>
+
+      <h2>سجل الدورات الكامل</h2>
+      <div id="allRequestsList" class="cards"></div>
+
+      <h2>سجل التكليفات الكامل</h2>
+      <div id="allAssignmentsList" class="cards"></div>
+    </section>
+  </main>
+</div>
+
+<div id="modal" class="modal hidden">
+  <div class="modal-card">
+    <div class="section-head">
+      <h2 id="modalTitle"></h2>
+      <button id="modalClose" class="icon-btn" type="button">✕</button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js?v=20261025033154"></script>
+<script src="script.js?v=20261025033154"></script>
+</body>
+</html>

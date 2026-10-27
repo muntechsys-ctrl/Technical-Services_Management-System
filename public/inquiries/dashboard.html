@@ -1,0 +1,370 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>صفحة متابعة خدمة المتعاملين</title>
+
+    <link rel="stylesheet" href="style.css?v=8">
+</head>
+
+<body>
+
+    <div class="login-page">
+
+        <div class="login-card" id="dashboardPage">
+
+           <div class="logo">
+    <img src="./Dhaid logo.png"
+         alt="شعار بلدية مدينة الذيد">
+</div>
+
+            <h1>صفحة متابعة خدمة المتعاملين</h1>
+
+            <div class="subtitle">
+                قسم خدمة المتعاملين - إدارة الخدمات الفنية 
+            </div>
+
+            <!-- تسجيل الدخول (للموظفين المضافين فقط) -->
+            <div class="admin-box">
+
+                <div id="adminLoginForm">
+
+                    <h3>تسجيل الدخول</h3>
+
+                    <div class="admin-fields">
+
+                        <input type="text"
+                               id="adminUsername"
+                               placeholder="اسم المستخدم أو الإيميل"
+                               dir="ltr"
+                               autocomplete="username">
+
+                        <input type="password"
+                               id="adminPassword"
+                               placeholder="كلمة المرور"
+                               autocomplete="current-password">
+
+                        <button type="button" onclick="adminLogin()">
+                            دخول
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div id="adminLoggedIn" style="display:none;">
+
+                    <span id="adminLoggedInText"></span>
+
+                    <button type="button" onclick="adminLogout()">
+                        خروج
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- محتوى الصفحة يظهر بعد تسجيل الدخول فقط -->
+            <div id="staffContent" style="display:none;">
+
+            <!-- فتح شاشة QR للاستقبال -->
+            <a class="kiosk-link" href="kiosk.html" target="_blank">
+                فتح شاشة رمز QR للاستقبال
+            </a>
+
+            <!-- إدارة الموظفين (لمدير النظام فقط) -->
+            <div class="admin-box" id="staffManager" style="display:none;">
+
+                <h3>إدارة الموظفين</h3>
+
+                <div class="admin-fields">
+
+                    <input type="text"
+                           id="newStaffUsername"
+                           placeholder="اسم المستخدم (بالإنجليزي)"
+                           dir="ltr"
+                           autocomplete="off">
+
+                    <input type="text"
+                           id="newStaffPassword"
+                           placeholder="كلمة المرور (6 أحرف على الأقل)"
+                           dir="ltr"
+                           autocomplete="off">
+
+                    <button type="button" onclick="addStaff()">
+                        إضافة موظف
+                    </button>
+
+                </div>
+
+                <ul id="staffList" class="staff-list"></ul>
+
+            </div>
+
+            <!-- سجل استخدام رمز QR (لمدير النظام فقط) -->
+            <div class="admin-box" id="qrLogBox" style="display:none;">
+
+                <!-- السجل مخفي افتراضياً ويُفتح بالضغط على العنوان -->
+                <details class="qr-log-details">
+
+                <summary>سجل استخدام رمز QR (آخر 50)</summary>
+
+                <button type="button"
+                        class="clear-log-button"
+                        onclick="clearQrLog()">
+                    مسح السجل
+                </button>
+
+                <div class="table-container">
+
+                    <table class="qr-log-table">
+
+                        <thead>
+                            <tr>
+                                <th>وقت المسح</th>
+                                <th>الحالة</th>
+                                <th>وقت الإرسال</th>
+                                <th>المتعامل</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="qrLogBody"></tbody>
+
+                    </table>
+
+                </div>
+
+                </details>
+
+            </div>
+
+            <h2>سجل استفسارات وشكاوي</h2>
+
+            <!-- بطاقات إحصائيات الاستفسارات -->
+            <div class="summary-cards">
+
+                <div class="summary-card">
+                    <h3>إجمالي الاستفسارات</h3>
+                    <span id="totalCount">0</span>
+                </div>
+
+                <div class="summary-card">
+                    <h3>لم يتم الرد</h3>
+                    <span id="pendingCount">0</span>
+                </div>
+
+                <div class="summary-card">
+                    <h3>تم الرد</h3>
+                    <span id="repliedCount">0</span>
+                </div>
+
+            </div>
+
+            <!-- خانات الاستفسارات -->
+            <div class="inquiry-tabs">
+
+                <button
+                    type="button"
+                    id="pendingTab"
+                    class="active"
+                    onclick="filterInquiries('لم يتم الرد')">
+                    لم يتم الرد
+                </button>
+
+                <button
+                    type="button"
+                    id="repliedTab"
+                    onclick="filterInquiries('تم الرد')">
+                    تم الرد
+                </button>
+
+            </div>
+
+<!-- البحث والفلترة -->
+<div class="inquiry-filters" style="margin:20px 0;">
+
+    <h3>البحث وفلترة الاستفسارات</h3>
+
+    <div style="display:grid;
+                grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+                gap:12px;">
+
+        <div>
+            <label for="filterCustomerName">اسم المتعامل</label>
+            <input type="text"
+                   id="filterCustomerName"
+                   placeholder="ابحث باسم المتعامل"
+                   oninput="displayInquiries()">
+        </div>
+
+        <div>
+            <label for="filterPhone">رقم الهاتف</label>
+            <input type="tel"
+                   id="filterPhone"
+                   placeholder="ابحث برقم الهاتف"
+                   oninput="displayInquiries()">
+        </div>
+
+        <div>
+            <label for="filterEmployee">اسم الموظف</label>
+            <input type="text"
+                   id="filterEmployee"
+                   placeholder="ابحث باسم الموظف"
+                   oninput="displayInquiries()">
+        </div>
+
+        <div>
+            <label for="filterDate">التاريخ</label>
+            <input type="date"
+                   id="filterDate"
+                   onchange="displayInquiries()">
+        </div>
+
+    </div>
+
+    <button type="button"
+            onclick="clearInquiryFilters()"
+            style="margin-top:12px;">
+        مسح الفلاتر
+    </button>
+
+</div>
+
+            <!-- جدول الاستفسارات -->
+            <div class="table-container">
+
+                <table id="inquiriesTable">
+
+                    <thead>
+                        <tr>
+                            <th>م</th>
+                            <th>اسم المتعامل</th>
+                            <th>النوع</th>
+                            <th>التاريخ</th>
+                            <th>الموظف</th>
+                            <th>الحالة</th>
+                            <th>التفاصيل</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="inquiriesTableBody"></tbody>
+
+                </table>
+
+            </div>
+
+            <p id="emptyMessage">
+                لا توجد استفسارات بانتظار الرد حالياً
+            </p>
+
+            <!-- تفاصيل الاستفسار -->
+            <div id="inquiryDetails" style="display:none;">
+                
+
+                <h2>تفاصيل الاستفسار</h2>
+
+                <table>
+
+                    <tr>
+                        <th>اسم المتعامل</th>
+                        <td id="detailName"></td>
+                    </tr>
+
+                    <tr>
+                        <th>النوع</th>
+                        <td id="detailType"></td>
+                    </tr>
+
+                    <tr>
+                        <th>رقم الهاتف</th>
+                        <td id="detailPhone"></td>
+                    </tr>
+
+                    <tr>
+                        <th>اليوم</th>
+                        <td id="detailDay"></td>
+                    </tr>
+
+                    <tr>
+                        <th>التاريخ</th>
+                        <td id="detailDate"></td>
+                    </tr>
+
+                    <tr>
+                        <th>الوقت</th>
+                        <td id="detailTime"></td>
+                    </tr>
+
+                    <tr>
+                        <th>الموظف المستفسر منه</th>
+                        <td id="detailEmployee"></td>
+                    </tr>
+
+                    <tr>
+                        <th>الاستفسار</th>
+                        <td id="detailInquiry"></td>
+                    </tr>
+
+                    <tr>
+                        <th>آخر رد بواسطة</th>
+                        <td id="detailRepliedBy"></td>
+                    </tr>
+
+                </table>
+
+                <!-- الإضافة الجديدة: ملاحظات الرد -->
+                <label class="clint" for="replyNotes">
+                    ملاحظات الرد
+                </label>
+
+                <textarea
+                    id="replyNotes"
+                    rows="5"
+                    placeholder="اكتب هنا الرد الذي تم تقديمه للمتعامل"></textarea>
+
+                <!-- حالة الاستفسار -->
+                <label class="clint" for="inquiryStatus">
+                    حالة الاستفسار
+                </label>
+
+                <select id="inquiryStatus">
+
+                    <option value="لم يتم الرد">
+                        لم يتم الرد
+                    </option>
+
+                    <option value="تم الرد">
+                        تم الرد
+                    </option>
+
+                </select>
+     <button type="button" onclick="updateInquiryStatus()">
+    حفظ الحالة والملاحظات
+</button>
+
+<button type="button"
+        id="deleteButton"
+        onclick="deleteInquiry()"
+        style="display:none; background-color:#a83232; margin-top:12px;">
+    حذف الاستفسار
+</button>
+            </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js?v=2"></script>
+    <script src="script.js?v=15"></script>
+
+</body>
+</html>
